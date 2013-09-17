@@ -2,18 +2,16 @@ package org.where2pair.presentation;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 import static org.where2pair.presentation.Screen.VENUES_VIEW;
-import static org.where2pair.presentation.VenueFinderPresentationModelTest.SearchRequestMatcher.equalTo;
+import static org.where2pair.presentation.SearchRequestMatcher.equalTo;
 
 import java.util.List;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -60,31 +58,5 @@ public class VenueFinderPresentationModelTest {
 		ArgumentCaptor<SearchRequest> captor = ArgumentCaptor.forClass(SearchRequest.class);
 		verify(venueFinder).fetchVenues(captor.capture(), any(VenuesResultAction.class));
 		return captor.getValue();
-	}
-	
-	static class SearchRequestMatcher extends TypeSafeMatcher<SearchRequest> {
-		private SearchRequest expectedSearchRequest;
-
-		SearchRequestMatcher(SearchRequest expectedSearchRequest) {
-			this.expectedSearchRequest = expectedSearchRequest;
-		}
-
-		@Override
-		public void describeTo(Description description) {
-			description.appendText(expectedSearchRequest.toString());
-		}
-
-		@Override
-		protected boolean matchesSafely(SearchRequest actualSearchRequest) {
-			SimpleTime expectedOpen = expectedSearchRequest.getOpenFrom();
-			SimpleTime actualOpen = actualSearchRequest.getOpenFrom();
-			return expectedOpen.hour == actualOpen.hour && expectedOpen.minute == actualOpen.minute 
-					&& expectedSearchRequest.getFacilities().equals(actualSearchRequest.getFacilities());
-		}
-	
-		public static SearchRequestMatcher equalTo(SearchRequest expectedSearchRequest) {
-			return new SearchRequestMatcher(expectedSearchRequest); 
-		}
-		
 	}
 }
