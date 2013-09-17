@@ -1,0 +1,29 @@
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# IDE Files           #
+#######################
+*.iml
+.idea
+*.ipr
+*.iws
+.idea
+.project
+.classpath
+.settings
+build-eclipse/*
+bin/*
+
+# Gradle Files       #
+######################
+build/*
+.gradle/*
+**/.gradle/*
+**/build/*
+classes/*
+/build-eclipse
+/build
