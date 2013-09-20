@@ -56,7 +56,7 @@ public class VenueFinderPresentationModelTest {
 	
 	private SearchRequest actualSearchRequest() {
 		ArgumentCaptor<SearchRequest> captor = ArgumentCaptor.forClass(SearchRequest.class);
-		verify(venueFinder).fetchVenues(captor.capture(), any(VenuesResultAction.class));
+		verify(venueFinder).findVenues(captor.capture(), any(VenuesResultAction.class));
 		return captor.getValue();
 	}
 }

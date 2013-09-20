@@ -7,11 +7,11 @@ import org.where2pair.Venue;
 
 import retrofit.Callback;
 import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit.http.QueryParams;
 
-public interface VenueRestRequestor {
+public interface VenueRequestor {
 	
 	@GET("/venues/nearest")
-	void fetchVenues(@QueryParams Map<String, String> searchCriteria, Callback<List<Venue>> venuesCallback);
+	void requestVenues(@QueryParams Map<String, String> searchCriteria, Callback<List<Venue>> venuesCallback);
 	
 }

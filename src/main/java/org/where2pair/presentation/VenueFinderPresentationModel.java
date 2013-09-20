@@ -21,7 +21,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	public void pressSearchButton() {
 		SimpleTime currentTime = timeProvider.getCurrentTime();
 		SearchRequest searchRequest = aSearchRequest().openFrom(currentTime).withWifi().withSeating().build();
-		venueFinder.fetchVenues(searchRequest, new VenuesResultAction(this));
+		venueFinder.findVenues(searchRequest, new VenuesResultAction(this));
 	}
 
 	@Override
