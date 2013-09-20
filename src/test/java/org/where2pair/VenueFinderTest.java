@@ -1,9 +1,11 @@
 package org.where2pair;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static org.mockito.Mockito.verify;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +25,15 @@ public class VenueFinderTest {
 	@Test
 	public void mapsASearchRequestIntoAWebRequestAndReturnsTheResult() {
 		SearchRequest searchRequest = aSearchRequest().openFrom(CURRENT_TIME).withWifi().withSeating().build();
+		Map<String, String> expectedSearchCriteria = newHashMap();
+		expectedSearchCriteria.put("openFrom", "12.30");
+		expectedSearchCriteria.put("withFacilities", "WIFI,SEATING");
 		
 		venueFinder.fetchVenues(searchRequest, venuesResultAction);
 		
-		verify(venueRequestor).findVenues("venues/nearest?openFrom=12.30&withFacilities=WIFI,SEATING", venuesResultAction);
+		verify(venueRequestor).findVenues(expectedSearchCriteria, venuesResultAction);
 	}
+	
+	//TODO create custom matcher for params
 	
 }
