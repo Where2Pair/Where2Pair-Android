@@ -30,4 +30,9 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		screenNavigator.navigateTo(VENUES_VIEW);
 	}
 
+    @Override
+    public void notifyVenuesFindingFailed(String reason) {
+
+    }
+
 }

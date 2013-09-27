@@ -20,6 +20,6 @@ public class VenuesCallback implements Callback<List<Venue>> {
 
     @Override
     public void failure(RetrofitError retrofitError) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        venuesResultAction.failed("Network Error");
     }
 }

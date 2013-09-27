@@ -6,7 +6,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.where2pair.request.VenueRequestor;
 import retrofit.Callback;
 
 import java.util.List;
@@ -24,7 +23,8 @@ public class VenueFinderTest {
 
 	private static final SimpleTime CURRENT_TIME = new SimpleTime(12, 30);
 	@Mock VenuesResultAction venuesResultAction;
-	@Mock VenueRequestor venueRequestor;
+	@Mock
+    VenueRequester venueRequester;
     @Mock Callback<List<Venue>> venuesCallback;
 	@InjectMocks VenueFinder venueFinder;
 	
@@ -36,7 +36,7 @@ public class VenueFinderTest {
 		venueFinder.findVenues(searchRequest, venuesResultAction);
 
         ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
-        verify(venueRequestor).requestVenues(captor.capture(), any(VenuesCallback.class));
+        verify(venueRequester).requestVenues(captor.capture(), any(VenuesResultAction.class));
         Map<String, String> searchCriteria = (Map<String, String>)captor.getValue();
         assertThat(searchCriteria.get("openFrom"), equalTo("12.30"));
 	    assertThat(searchCriteria.get("withFacilities"), containsString("WIFI"));

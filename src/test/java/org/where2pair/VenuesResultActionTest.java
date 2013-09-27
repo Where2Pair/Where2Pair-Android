@@ -24,5 +24,14 @@ public class VenuesResultActionTest {
 		
 		verify(venuesResultActionHandler).notifyVenuesFound(venues);
 	}
-	
+
+    @Test
+    public void notifiesActionHandlerWhenVenuesFindingFailed() {
+        VenuesResultAction venuesResultAction = new VenuesResultAction(venuesResultActionHandler);
+        String reason = "Network Error";
+
+        venuesResultAction.failed(reason);
+
+        verify(venuesResultActionHandler).notifyVenuesFindingFailed(reason);
+    }
 }

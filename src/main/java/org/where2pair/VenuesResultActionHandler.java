@@ -6,4 +6,5 @@ public interface VenuesResultActionHandler {
 
 	void notifyVenuesFound(List<Venue> venues);
 
+    void notifyVenuesFindingFailed(String reason);
 }

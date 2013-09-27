@@ -13,5 +13,8 @@ public class VenuesResultAction {
 	public void apply(List<Venue> venues) {
 		venuesResultActionHandler.notifyVenuesFound(venues);
 	}
-	
+
+    public void failed(String reason) {
+        venuesResultActionHandler.notifyVenuesFindingFailed(reason);
+    }
 }
