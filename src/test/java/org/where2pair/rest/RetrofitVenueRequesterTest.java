@@ -1,40 +1,44 @@
 package org.where2pair.rest;
 
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.where2pair.*;
-import retrofit.Callback;
-
-import java.util.List;
-import java.util.Map;
-
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.where2pair.Coordinates;
+import org.where2pair.SearchRequest;
+import org.where2pair.SimpleTime;
+import org.where2pair.VenuesResultAction;
+
+import retrofit.Callback;
+
+@RunWith(MockitoJUnitRunner.class)
 public class RetrofitVenueRequesterTest {
 
     private static final SimpleTime CURRENT_TIME = new SimpleTime(12, 30);
+    private static final Coordinates CURRENT_LOCATION = new Coordinates(1.0, 0.1);
     @Mock VenuesResultAction venuesResultAction;
     @Mock RetrofitVenueService venueService;
     @InjectMocks RetrofitVenueRequester venueRequester;
 
-
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void mapsTheSearchRequestToQueryParams() {
-        SearchRequest searchRequest = aSearchRequest().openFrom(CURRENT_TIME).withWifi().withSeating().build();
+        SearchRequest searchRequest = aSearchRequest().openFrom(CURRENT_TIME).near(CURRENT_LOCATION).withWifi().withSeating().build();
 
-        venueRequester.requestVenues(searchRequest, venuesResultAction);
+        venueRequester.findVenues(searchRequest, venuesResultAction);
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(venueService).requestVenues("12.30", captor.capture(), any(Callback.class));
-        String facilities = captor.getValue();
+        ArgumentCaptor<String> facilitiesCaptor = ArgumentCaptor.forClass(String.class);
+        verify(venueService).requestVenues(eq("(1.0,0.1)"), eq("12.30"), facilitiesCaptor.capture(), any(Callback.class));
+        String facilities = facilitiesCaptor.getValue();
 
         assertThat(facilities, containsString("WIFI"));
         assertThat(facilities, containsString("SEATING"));

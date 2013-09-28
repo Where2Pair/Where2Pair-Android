@@ -6,16 +6,18 @@ import java.util.Set;
 
 public class SearchRequest {
 
+	private final Coordinates location;
 	private final SimpleTime openFrom;
 	private final Set<String> facilities;
 	
-	public SearchRequest(SimpleTime openFrom, Set<String> facilities) {
+	public SearchRequest(Coordinates location, SimpleTime openFrom, Set<String> facilities) {
+		this.location = location;
 		this.openFrom = openFrom;
 		this.facilities = newHashSet(facilities);
 	}
-
-	public static SearchRequest openFrom(SimpleTime openFrom, Set<String> facilities) {
-		return new SearchRequest(openFrom, facilities);
+	
+	public Coordinates getLocation() {
+		return location;
 	}
 	
 	public SimpleTime getOpenFrom() {
@@ -28,7 +30,6 @@ public class SearchRequest {
 
 	@Override
 	public String toString() {
-		return "SearchRequest [openFrom=" + openFrom + ", facilities="
-				+ facilities + "]";
+		return "SearchRequest [location=" + location + ", openFrom=" + openFrom + ", facilities=" + facilities + "]";
 	}
 }

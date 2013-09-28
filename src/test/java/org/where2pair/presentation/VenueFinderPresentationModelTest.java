@@ -7,8 +7,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
+import static org.where2pair.SearchRequestMatcher.equalTo;
 import static org.where2pair.presentation.Screen.VENUES_VIEW;
-import static org.where2pair.presentation.SearchRequestMatcher.equalTo;
 
 import java.util.List;
 
@@ -18,6 +18,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.where2pair.Coordinates;
+import org.where2pair.LocationProvider;
 import org.where2pair.SearchRequest;
 import org.where2pair.SimpleTime;
 import org.where2pair.Venue;
@@ -28,16 +30,19 @@ import org.where2pair.VenuesResultAction;
 public class VenueFinderPresentationModelTest {
 
 	private static final SimpleTime CURRENT_TIME = new SimpleTime(12, 30);
+	private static final Coordinates CURRENT_LOCATION = new Coordinates(1.0, 0.1);
 	@Mock VenueFinder venueFinder;
 	@Mock TimeProvider timeProvider;
+	@Mock LocationProvider locationProvider;
 	@Mock VenuesViewerPresentationModel venuesViewerPresentationModel;
 	@Mock ScreenNavigator screenNavigator;
 	@InjectMocks VenueFinderPresentationModel venueFinderPresentationModel;
 	
 	@Test
-	public void findsOpenVenuesWithWifiAndSeatingWhenSearchButtonIsPressed() {
+	public void findsOpenVenuesNearCurrentLocationWithWifiAndSeatingWhenSearchButtonIsPressed() {
 		given(timeProvider.getCurrentTime()).willReturn(CURRENT_TIME);
-		SearchRequest expectedSearchRequest = aSearchRequest().openFrom(CURRENT_TIME).withWifi().withSeating().build();
+		given(locationProvider.getCurrentLocation()).willReturn(CURRENT_LOCATION);
+		SearchRequest expectedSearchRequest = aSearchRequest().openFrom(CURRENT_TIME).near(CURRENT_LOCATION).withWifi().withSeating().build();
 		
 		venueFinderPresentationModel.pressSearchButton();
 		

@@ -8,6 +8,7 @@ public class SearchRequestBuilder {
 
 	private Set<String> facilities = newHashSet();
 	private SimpleTime openFrom;
+	private Coordinates location;
 	
 	public static SearchRequestBuilder aSearchRequest() {
 		return new SearchRequestBuilder();
@@ -29,7 +30,12 @@ public class SearchRequestBuilder {
 	}
 	
 	public SearchRequest build() {
-		return SearchRequest.openFrom(openFrom, facilities);
+		return new SearchRequest(location, openFrom, facilities);
+	}
+
+	public SearchRequestBuilder near(Coordinates location) {
+		this.location = location;
+		return this;
 	}
 
 }

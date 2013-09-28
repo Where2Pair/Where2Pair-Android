@@ -1,11 +1,12 @@
-package org.where2pair.presentation;
+package org.where2pair;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
+import org.where2pair.Coordinates;
 import org.where2pair.SearchRequest;
 import org.where2pair.SimpleTime;
 
-class SearchRequestMatcher extends TypeSafeMatcher<SearchRequest> {
+public class SearchRequestMatcher extends TypeSafeMatcher<SearchRequest> {
 	private SearchRequest expectedSearchRequest;
 
 	SearchRequestMatcher(SearchRequest expectedSearchRequest) {
@@ -19,9 +20,13 @@ class SearchRequestMatcher extends TypeSafeMatcher<SearchRequest> {
 
 	@Override
 	protected boolean matchesSafely(SearchRequest actualSearchRequest) {
+		Coordinates expectedLocation = expectedSearchRequest.getLocation();
+		Coordinates actualLocation = actualSearchRequest.getLocation();
 		SimpleTime expectedOpen = expectedSearchRequest.getOpenFrom();
 		SimpleTime actualOpen = actualSearchRequest.getOpenFrom();
-		return expectedOpen.hour == actualOpen.hour && expectedOpen.minute == actualOpen.minute 
+		return expectedOpen.hour == actualOpen.hour && expectedOpen.minute == actualOpen.minute
+				&& expectedLocation.latitude == actualLocation.latitude
+				&& expectedLocation.longitude == actualLocation.longitude
 				&& expectedSearchRequest.getFacilities().equals(actualSearchRequest.getFacilities());
 	}
 

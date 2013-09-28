@@ -5,6 +5,8 @@ import static org.where2pair.presentation.Screen.VENUES_VIEW;
 
 import java.util.List;
 
+import org.where2pair.Coordinates;
+import org.where2pair.LocationProvider;
 import org.where2pair.SearchRequest;
 import org.where2pair.SimpleTime;
 import org.where2pair.Venue;
@@ -15,12 +17,14 @@ import org.where2pair.VenuesResultActionHandler;
 public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private VenueFinder venueFinder;
 	private TimeProvider timeProvider;
+	private LocationProvider locationProvider;
 	private VenuesViewerPresentationModel venuesViewerPresentationModel;
 	private ScreenNavigator screenNavigator;
 
 	public void pressSearchButton() {
 		SimpleTime currentTime = timeProvider.getCurrentTime();
-		SearchRequest searchRequest = aSearchRequest().openFrom(currentTime).withWifi().withSeating().build();
+		Coordinates currentLocation = locationProvider.getCurrentLocation();
+		SearchRequest searchRequest = aSearchRequest().openFrom(currentTime).near(currentLocation).withWifi().withSeating().build();
 		venueFinder.findVenues(searchRequest, new VenuesResultAction(this));
 	}
 
