@@ -1,6 +1,5 @@
 package org.where2pair.presentation;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -8,6 +7,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 import static org.where2pair.SearchRequestMatcher.equalTo;
+import static org.where2pair.TestUtils.sampleVenues;
 import static org.where2pair.presentation.Screen.VENUES_VIEW;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class VenueFinderPresentationModelTest {
 	
 	@Test
 	public void passesFoundVenuesOnToVenuesViewerPresentationModelAndNavigatesToScreen() {
-		List<Venue> venues = newArrayList(new Venue(), new Venue());
+		List<Venue> venues = sampleVenues();
 		
 		venueFinderPresentationModel.notifyVenuesFound(venues);
 		

@@ -26,5 +26,4 @@ build/*
 **/build/*
 classes/*
 /build-eclipse
-/build
-/bin
+**/bin/*

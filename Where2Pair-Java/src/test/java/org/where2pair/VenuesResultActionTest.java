@@ -1,7 +1,7 @@
 package org.where2pair;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.Mockito.verify;
+import static org.where2pair.TestUtils.sampleVenues;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class VenuesResultActionTest {
 	
 	@Test
 	public void notifiesActionHandlerWhenVenuesSet() {
-		List<Venue> venues = newArrayList(new Venue(), new Venue());
+		List<Venue> venues = sampleVenues();
 		VenuesResultAction venuesResultAction = new VenuesResultAction(venuesResultActionHandler);
 		
 		venuesResultAction.apply(venues);
