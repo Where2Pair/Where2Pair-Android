@@ -6,6 +6,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
+
 import org.where2pair.presentation.LocationProvider;
 import org.where2pair.presentation.ScreenNavigator;
 import org.where2pair.presentation.TimeProvider;
@@ -23,7 +25,7 @@ public class Where2PairModule extends AbstractModule {
         this.applicationContext = applicationContext;
     }
 
-    @Provides
+    @Provides @Singleton
     public VenueFinderPresentationModel getVenueFinderPresentationModel(TimeProvider timeProvider, LocationProvider locationProvider,
                                                                         VenuesViewerPresentationModel venuesViewerPresentationModel, ScreenNavigator screenNavigator) {
         RestAdapter restAdapter = new RestAdapter.Builder()
@@ -35,7 +37,7 @@ public class Where2PairModule extends AbstractModule {
         return new VenueFinderPresentationModel(venueFinder, timeProvider, locationProvider, venuesViewerPresentationModel, screenNavigator);
     }
 
-    @Provides
+    @Provides @Singleton
     public VenuesViewerPresentationModel getVenuesViewerPresentationModel() {
         return new VenuesViewerPresentationModel();
     }

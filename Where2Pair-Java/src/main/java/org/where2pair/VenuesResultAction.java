@@ -10,7 +10,7 @@ public class VenuesResultAction {
 		this.venuesResultActionHandler = venuesResultActionHandler;
 	}
 
-	public void apply(List<Venue> venues) {
+	public void apply(List<VenueWithDistance> venues) {
 		venuesResultActionHandler.notifyVenuesFound(venues);
 	}
 

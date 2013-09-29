@@ -8,8 +8,8 @@ import java.util.List;
 import org.where2pair.Coordinates;
 import org.where2pair.SearchRequest;
 import org.where2pair.SimpleTime;
-import org.where2pair.Venue;
 import org.where2pair.VenueFinder;
+import org.where2pair.VenueWithDistance;
 import org.where2pair.VenuesResultAction;
 import org.where2pair.VenuesResultActionHandler;
 
@@ -39,7 +39,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	}
 
 	@Override
-	public void notifyVenuesFound(List<Venue> venues) {
+	public void notifyVenuesFound(List<VenueWithDistance> venues) {
 		venuesViewerPresentationModel.setVenues(venues);
 		screenNavigator.navigateTo(VENUES_VIEW);
 	}

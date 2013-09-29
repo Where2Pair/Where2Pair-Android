@@ -20,7 +20,7 @@ public class VenuesCallbackTest {
 
     @Test
     public void onSuccessInvokesActionSuccessCallback() {
-        List<Venue> venues = newArrayList();
+        List<VenueWithDistance> venues = newArrayList();
         VenuesCallback venuesCallback = new VenuesCallback(venuesResultAction);
 
         venuesCallback.success(venues, null);

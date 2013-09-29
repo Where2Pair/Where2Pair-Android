@@ -1,7 +1,7 @@
 package org.where2pair;
 
 import static org.mockito.Mockito.verify;
-import static org.where2pair.TestUtils.sampleVenues;
+import static org.where2pair.TestUtils.sampleVenuesWithDistance;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class VenuesResultActionTest {
 	
 	@Test
 	public void notifiesActionHandlerWhenVenuesSet() {
-		List<Venue> venues = sampleVenues();
+		List<VenueWithDistance> venues = sampleVenuesWithDistance();
 		VenuesResultAction venuesResultAction = new VenuesResultAction(venuesResultActionHandler);
 		
 		venuesResultAction.apply(venues);

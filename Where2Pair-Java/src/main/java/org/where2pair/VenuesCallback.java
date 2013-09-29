@@ -6,7 +6,7 @@ import retrofit.client.Response;
 
 import java.util.List;
 
-public class VenuesCallback implements Callback<List<Venue>> {
+public class VenuesCallback implements Callback<List<VenueWithDistance>> {
     private final VenuesResultAction venuesResultAction;
 
     public VenuesCallback(VenuesResultAction venuesResultAction) {
@@ -14,7 +14,7 @@ public class VenuesCallback implements Callback<List<Venue>> {
     }
 
     @Override
-    public void success(List<Venue> venues, Response response) {
+    public void success(List<VenueWithDistance> venues, Response response) {
         venuesResultAction.apply(venues);
     }
 

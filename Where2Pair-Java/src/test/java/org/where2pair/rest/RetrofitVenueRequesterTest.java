@@ -24,7 +24,7 @@ import retrofit.Callback;
 public class RetrofitVenueRequesterTest {
 
     private static final SimpleTime CURRENT_TIME = new SimpleTime(12, 30);
-    private static final Coordinates CURRENT_LOCATION = new Coordinates(1.0, 0.1);
+    private static final Coordinates CURRENT_LOCATION = new Coordinates(51.520547, -0.082103);
     @Mock VenuesResultAction venuesResultAction;
     @Mock RetrofitVenueService venueService;
     @InjectMocks RetrofitVenueRequester venueRequester;
@@ -37,7 +37,7 @@ public class RetrofitVenueRequesterTest {
         venueRequester.findVenues(searchRequest, venuesResultAction);
 
         ArgumentCaptor<String> facilitiesCaptor = ArgumentCaptor.forClass(String.class);
-        verify(venueService).requestVenues(eq("1.0,0.1"), eq("12.30"), facilitiesCaptor.capture(), any(Callback.class));
+        verify(venueService).requestVenues(eq("51.520547,-0.082103"), eq("12.30"), facilitiesCaptor.capture(), any(Callback.class));
         String facilities = facilitiesCaptor.getValue();
 
         assertThat(facilities, containsString("WIFI"));

@@ -7,7 +7,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 import static org.where2pair.SearchRequestMatcher.equalTo;
-import static org.where2pair.TestUtils.sampleVenues;
+import static org.where2pair.TestUtils.sampleVenuesWithDistance;
 import static org.where2pair.presentation.Screen.VENUES_VIEW;
 
 import java.util.List;
@@ -21,8 +21,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.where2pair.Coordinates;
 import org.where2pair.SearchRequest;
 import org.where2pair.SimpleTime;
-import org.where2pair.Venue;
 import org.where2pair.VenueFinder;
+import org.where2pair.VenueWithDistance;
 import org.where2pair.VenuesResultAction;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,7 +50,7 @@ public class VenueFinderPresentationModelTest {
 	
 	@Test
 	public void passesFoundVenuesOnToVenuesViewerPresentationModelAndNavigatesToScreen() {
-		List<Venue> venues = sampleVenues();
+		List<VenueWithDistance> venues = sampleVenuesWithDistance();
 		
 		venueFinderPresentationModel.notifyVenuesFound(venues);
 		

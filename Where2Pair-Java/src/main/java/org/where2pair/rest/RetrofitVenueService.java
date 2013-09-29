@@ -2,7 +2,7 @@ package org.where2pair.rest;
 
 import java.util.List;
 
-import org.where2pair.Venue;
+import org.where2pair.VenueWithDistance;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -15,6 +15,6 @@ public interface RetrofitVenueService {
     		@Query("location") String locations,
     		@Query("openFrom") String openFrom, 
     		@Query("withFacilities") String withFacilities, 
-    		Callback<List<Venue>> venuesCallback);
+    		Callback<List<VenueWithDistance>> venuesCallback);
 
 }

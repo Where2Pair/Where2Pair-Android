@@ -15,7 +15,7 @@ public class RetrofitVenueRequester implements VenueFinder {
 
 	@Override
     public void findVenues(SearchRequest searchRequest, VenuesResultAction venuesResultAction) {
-    	retrofitVenueService.requestVenues("1.0,0.1", "12.30", "WIFI,SEATING", new VenuesCallback(venuesResultAction));
+    	retrofitVenueService.requestVenues("51.520547,-0.082103", "12.30", "WIFI,SEATING", new VenuesCallback(venuesResultAction));
     }
     
 }
