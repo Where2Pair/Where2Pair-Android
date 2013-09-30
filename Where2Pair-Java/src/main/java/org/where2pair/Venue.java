@@ -6,17 +6,15 @@ public class Venue {
 
 	private final long id;
 	private final String name;
-	private final double latitude;
-	private final double longitude;
+	private final Coordinates location;
 	private final Address address;
 	private final List<String> features;
 	
-	public Venue(long id, String name, double latitude, double longitude,
+	public Venue(long id, String name, Coordinates location,
 			Address address, List<String> features) {
 		this.id = id;
 		this.name = name;
-		this.latitude = latitude;
-		this.longitude = longitude;
+		this.location = location;
 		this.address = address;
 		this.features = features;
 	}
@@ -28,13 +26,9 @@ public class Venue {
 	public String getName() {
 		return name;
 	}
-
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
+	
+	public Coordinates getLocation() {
+		return location;
 	}
 
 	public Address getAddress() {
@@ -53,11 +47,8 @@ public class Venue {
 		result = prime * result
 				+ ((features == null) ? 0 : features.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
-		long temp;
-		temp = Double.doubleToLongBits(latitude);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(longitude);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result
+				+ ((location == null) ? 0 : location.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -83,11 +74,10 @@ public class Venue {
 			return false;
 		if (id != other.id)
 			return false;
-		if (Double.doubleToLongBits(latitude) != Double
-				.doubleToLongBits(other.latitude))
-			return false;
-		if (Double.doubleToLongBits(longitude) != Double
-				.doubleToLongBits(other.longitude))
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
 			return false;
 		if (name == null) {
 			if (other.name != null)

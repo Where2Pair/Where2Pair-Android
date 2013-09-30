@@ -81,20 +81,20 @@ public class VenuesIntegrationTest {
 	
 	static class TestData {
 		static final List<VenueWithDistance> VENUES = newArrayList(new VenueWithDistance(ImmutableMap.of("location", 0.34362823973381357),
-				new Venue(40L, "Starbucks", 51.5139, -0.11017, new Address("30-32 Fleet Street", "Eldon Chambers", "Unit 2 Eldon Chambers", "London", "EC4Y 1AA", "02075834163"),
+				new Venue(40L, "Starbucks", new Coordinates(51.5139, -0.11017), new Address("30-32 Fleet Street", "Eldon Chambers", "Unit 2 Eldon Chambers", "London", "EC4Y 1AA", "02075834163"),
 						newArrayList("Mobile payments", "Wifi"))), new VenueWithDistance(ImmutableMap.of("location", 1.783973264721356),
-				new Venue(22L, "Starbucks", 51.51499, -0.09932, new Address("1 Paternoster House", "Unit 7", "", "London", "EC4M 7DX", "02072363014"),
+				new Venue(22L, "Starbucks", new Coordinates(51.51499, -0.09932), new Address("1 Paternoster House", "Unit 7", "", "London", "EC4M 7DX", "02072363014"),
 						newArrayList("Wifi"))));
 		
 		
-		static final String VENUES_JSON = "[{\"distance\":{\"location\":0.34362823973381357},\"venue\":{\"id\":40,\"name\":\"Starbucks\",\"latitude\":51.5139,\"longitude\":-0.11017,"
+		static final String VENUES_JSON = "[{\"distance\":{\"location\":0.34362823973381357},\"venue\":{\"id\":40,\"name\":\"Starbucks\",\"location\":{\"latitude\":51.5139,\"longitude\":-0.11017},"
 				+ "\"address\":{\"addressLine1\":\"30-32 Fleet Street\",\"addressLine2\":\"Eldon Chambers\",\"addressLine3\":\"Unit 2 Eldon Chambers\","
 				+ "\"city\":\"London\",\"postcode\":\"EC4Y 1AA\",\"phoneNumber\":\"02075834163\"},\"openHours\":{\"monday\":[{\"openHour\":6,\"openMinute\":0,"
 				+ "\"closeHour\":19,\"closeMinute\":30}],\"tuesday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,\"closeMinute\":30}],\"wednesday\":"
 				+ "[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,\"closeMinute\":30}],\"thursday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,"
 				+ "\"closeMinute\":30}],\"friday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,\"closeMinute\":30}],\"saturday\":[{\"openHour\":8,"
 				+ "\"openMinute\":0,\"closeHour\":18,\"closeMinute\":0}],\"sunday\":[{\"openHour\":8,\"openMinute\":30,\"closeHour\":18,\"closeMinute\":30}]},"
-				+ "\"features\":[\"Mobile payments\",\"Wifi\"]}},{\"distance\":{\"location\":1.783973264721356},\"venue\":{\"id\":22,\"name\":\"Starbucks\",\"latitude\":51.51499,\"longitude\":-0.09932,"
+				+ "\"features\":[\"Mobile payments\",\"Wifi\"]}},{\"distance\":{\"location\":1.783973264721356},\"venue\":{\"id\":22,\"name\":\"Starbucks\",\"location\":{\"latitude\":51.51499,\"longitude\":-0.09932},"
 				+ "\"address\":{\"addressLine1\":\"1 Paternoster House\",\"addressLine2\":\"Unit 7\",\"addressLine3\":\"\",\"city\":\"London\","
 				+ "\"postcode\":\"EC4M 7DX\",\"phoneNumber\":\"02072363014\"},\"openHours\":{\"monday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":20,"
 				+ "\"closeMinute\":0}],\"tuesday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":20,\"closeMinute\":0}],\"wednesday\":[{\"openHour\":6,"
