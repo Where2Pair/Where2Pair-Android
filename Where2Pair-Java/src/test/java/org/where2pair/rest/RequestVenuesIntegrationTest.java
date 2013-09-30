@@ -1,4 +1,4 @@
-package org.where2pair;
+package org.where2pair.rest;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
@@ -6,14 +6,27 @@ import static java.util.Collections.EMPTY_LIST;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.where2pair.DayOfWeek.FRIDAY;
+import static org.where2pair.DayOfWeek.MONDAY;
+import static org.where2pair.DayOfWeek.SATURDAY;
+import static org.where2pair.DayOfWeek.SUNDAY;
+import static org.where2pair.DayOfWeek.THURSDAY;
+import static org.where2pair.DayOfWeek.TUESDAY;
+import static org.where2pair.DayOfWeek.WEDNESDAY;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
-import org.where2pair.rest.RetrofitVenueService;
-
-import com.google.common.collect.ImmutableMap;
+import org.where2pair.Address;
+import org.where2pair.Coordinates;
+import org.where2pair.DailyOpeningTimes;
+import org.where2pair.DayOfWeek;
+import org.where2pair.OpenPeriod;
+import org.where2pair.Venue;
+import org.where2pair.VenueWithDistance;
+import org.where2pair.WeeklyOpeningTimes;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -24,7 +37,9 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 import retrofit.mime.TypedString;
 
-public class VenuesIntegrationTest {
+import com.google.common.collect.ImmutableMap;
+
+public class RequestVenuesIntegrationTest {
 
 	private static final String SERVER_URL = "http://where2pair.org";
 	private static final String EXPECTED_REQUEST_URL = SERVER_URL + "/venues/nearest?location=1.0%2C0.1&openFrom=12.30&withFacilities=WIFI%2CSEATING";
@@ -41,9 +56,8 @@ public class VenuesIntegrationTest {
 	}
 
 	private RetrofitVenueService retrofitVenueServiceForTest() {
-		RestAdapter restAdapter = new RestAdapter.Builder()
+		RestAdapter restAdapter = new RetrofitVenueServiceAdapterFactory(SERVER_URL).createRestAdapterBuilder()
 				.setClient(new MockClient())
-				.setServer(SERVER_URL)
 				.setExecutors(sameThreadExecutor(), sameThreadExecutor()).build();
 		return restAdapter.create(RetrofitVenueService.class);
 	}
@@ -80,11 +94,34 @@ public class VenuesIntegrationTest {
 	}
 	
 	static class TestData {
-		static final List<VenueWithDistance> VENUES = newArrayList(new VenueWithDistance(ImmutableMap.of("location", 0.34362823973381357),
-				new Venue(40L, "Starbucks", new Coordinates(51.5139, -0.11017), new Address("30-32 Fleet Street", "Eldon Chambers", "Unit 2 Eldon Chambers", "London", "EC4Y 1AA", "02075834163"),
-						newArrayList("Mobile payments", "Wifi"))), new VenueWithDistance(ImmutableMap.of("location", 1.783973264721356),
-				new Venue(22L, "Starbucks", new Coordinates(51.51499, -0.09932), new Address("1 Paternoster House", "Unit 7", "", "London", "EC4M 7DX", "02072363014"),
-						newArrayList("Wifi"))));
+		@SuppressWarnings("serial")
+		static final List<VenueWithDistance> VENUES = newArrayList(
+				new VenueWithDistance(ImmutableMap.of("location", 0.34362823973381357),
+						new Venue(40L, "Starbucks", new Coordinates(51.5139, -0.11017), new Address("30-32 Fleet Street", "Eldon Chambers", "Unit 2 Eldon Chambers", "London", "EC4Y 1AA", "02075834163"),
+								newArrayList("Mobile payments", "Wifi"), new WeeklyOpeningTimes(new HashMap<DayOfWeek, DailyOpeningTimes>(){
+									{
+										put(MONDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 19, 30))));
+										put(TUESDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 19, 30))));
+										put(WEDNESDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 19, 30))));
+										put(THURSDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 19, 30))));
+										put(FRIDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 19, 30))));
+										put(SATURDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(8, 0, 18, 0))));
+										put(SUNDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(8, 30, 18, 30))));
+									}
+								}))), 
+				new VenueWithDistance(ImmutableMap.of("location", 1.783973264721356),
+						new Venue(22L, "Starbucks", new Coordinates(51.51499, -0.09932), new Address("1 Paternoster House", "Unit 7", "", "London", "EC4M 7DX", "02072363014"),
+								newArrayList("Wifi"), new WeeklyOpeningTimes(new HashMap<DayOfWeek, DailyOpeningTimes>(){
+									{
+										put(MONDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 20, 0))));
+										put(TUESDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 20, 0))));
+										put(WEDNESDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 20, 0))));
+										put(THURSDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 20, 0))));
+										put(FRIDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(6, 0, 20, 0))));
+										put(SATURDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(8, 0, 18, 30))));
+										put(SUNDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(8, 0, 18, 30))));
+									}
+								}))));
 		
 		
 		static final String VENUES_JSON = "[{\"distance\":{\"location\":0.34362823973381357},\"venue\":{\"id\":40,\"name\":\"Starbucks\",\"location\":{\"latitude\":51.5139,\"longitude\":-0.11017},"

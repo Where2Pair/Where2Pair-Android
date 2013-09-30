@@ -9,14 +9,16 @@ public class Venue {
 	private final Coordinates location;
 	private final Address address;
 	private final List<String> features;
+	private final WeeklyOpeningTimes openHours;
 	
 	public Venue(long id, String name, Coordinates location,
-			Address address, List<String> features) {
+			Address address, List<String> features, WeeklyOpeningTimes openHours) {
 		this.id = id;
 		this.name = name;
 		this.location = location;
 		this.address = address;
 		this.features = features;
+		this.openHours = openHours;
 	}
 
 	public long getId() {
@@ -39,6 +41,10 @@ public class Venue {
 		return features;
 	}
 
+	public WeeklyOpeningTimes getOpenHours() {
+		return openHours;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -50,6 +56,8 @@ public class Venue {
 		result = prime * result
 				+ ((location == null) ? 0 : location.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result
+				+ ((openHours == null) ? 0 : openHours.hashCode());
 		return result;
 	}
 
@@ -84,7 +92,13 @@ public class Venue {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (openHours == null) {
+			if (other.openHours != null)
+				return false;
+		} else if (!openHours.equals(other.openHours))
+			return false;
 		return true;
 	}
+
 	
 }

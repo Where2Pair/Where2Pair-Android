@@ -15,6 +15,8 @@ import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesViewerPresentationModel;
 import org.where2pair.rest.RetrofitVenueRequester;
 import org.where2pair.rest.RetrofitVenueService;
+import org.where2pair.rest.RetrofitVenueServiceAdapterFactory;
+
 import retrofit.RestAdapter;
 
 public class Where2PairModule extends AbstractModule {
@@ -27,12 +29,11 @@ public class Where2PairModule extends AbstractModule {
 
     @Provides @Singleton
     public VenueFinderPresentationModel getVenueFinderPresentationModel(TimeProvider timeProvider, LocationProvider locationProvider,
-                                                                        VenuesViewerPresentationModel venuesViewerPresentationModel, ScreenNavigator screenNavigator) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setServer("http://where2pair.herokuapp.com")
-                .build();
+                                                                        VenuesViewerPresentationModel venuesViewerPresentationModel,
+                                                                        ScreenNavigator screenNavigator,
+                                                                        RetrofitVenueServiceAdapterFactory venueServiceAdapterFactory) {
 
-        VenueFinder venueFinder = new RetrofitVenueRequester(restAdapter.create(RetrofitVenueService.class));
+        VenueFinder venueFinder = new RetrofitVenueRequester(venueServiceAdapterFactory.createRetrofitVenueService());
 
         return new VenueFinderPresentationModel(venueFinder, timeProvider, locationProvider, venuesViewerPresentationModel, screenNavigator);
     }
@@ -45,6 +46,11 @@ public class Where2PairModule extends AbstractModule {
     @Provides
     public ScreenNavigator getScreenNavigator() {
         return new AndroidScreenNavigator(applicationContext);
+    }
+
+    @Provides
+    public RetrofitVenueServiceAdapterFactory getVenueServiceAdapterFactory() {
+        return new RetrofitVenueServiceAdapterFactory("http://where2pair.herokuapp.com");
     }
 
     @Override
