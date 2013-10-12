@@ -22,5 +22,6 @@ android {
 dependencies {
     compile 'org.roboguice:roboguice:2.0'
     compile 'org.robobinding:robobinding:0.8.1'
+    compile 'com.google.android.gms:play-services:3.2.65'
     compile project(':Where2Pair-Java')
 }

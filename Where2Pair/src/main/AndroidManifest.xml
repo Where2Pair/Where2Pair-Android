@@ -27,8 +27,14 @@
             android:name="org.where2pair.VenuesActivity"
             android:label="@string/title_activity_venues" >
         </activity>
+        <activity
+            android:name="org.where2pair.LocationsActivity"
+            android:label="@string/title_activity_locations" >
+        </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
 </manifest>

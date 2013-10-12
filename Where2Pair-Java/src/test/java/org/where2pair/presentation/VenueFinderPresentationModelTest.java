@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 import static org.where2pair.SearchRequestMatcher.equalTo;
 import static org.where2pair.TestUtils.sampleVenuesWithDistance;
+import static org.where2pair.presentation.Screen.LOCATIONS_VIEW;
 import static org.where2pair.presentation.Screen.VENUES_VIEW;
 
 import java.util.List;
@@ -56,6 +57,15 @@ public class VenueFinderPresentationModelTest {
 		
 		verify(venuesViewerPresentationModel).setVenues(venues);
 		verify(screenNavigator).navigateTo(VENUES_VIEW);
+	}
+	
+	@Test
+	public void showsLocationsScreenWhenNoLocationCouldBeFound() {
+		given(locationProvider.getCurrentLocation()).willReturn(null);
+		
+		venueFinderPresentationModel.pressSearchButton();
+		
+		verify(screenNavigator).navigateTo(LOCATIONS_VIEW);
 	}
 	
 	private SearchRequest actualSearchRequest() {

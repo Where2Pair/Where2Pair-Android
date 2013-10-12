@@ -49,13 +49,17 @@ public class Where2PairModule extends AbstractModule {
     }
 
     @Provides
+    public LocationProvider getLocationProvider() {
+        return new AndroidLocationProvider(applicationContext);
+    }
+
+    @Provides
     public RetrofitVenueServiceAdapterFactory getVenueServiceAdapterFactory() {
         return new RetrofitVenueServiceAdapterFactory("http://where2pair.herokuapp.com");
     }
 
     @Override
     protected void configure() {
-        bind(LocationProvider.class).to(AndroidLocationProvider.class);
         bind(TimeProvider.class).to(AndroidTimeProvider.class);
     }
 }

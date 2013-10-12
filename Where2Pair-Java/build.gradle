@@ -2,9 +2,10 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 dependencies {
-	compile 'com.google.guava:guava:14.0.1'
+	compile 'com.google.guava:guava:15.0'
 	compile 'com.squareup.retrofit:retrofit:1.2.2'
     compile 'org.robobinding:robobinding:0.8.1'
+	compile 'com.google.code.findbugs:annotations:2.0.1'
 
 	testCompile 'junit:junit:4.11'
 	testCompile 'org.mockito:mockito-core:1.9.5'

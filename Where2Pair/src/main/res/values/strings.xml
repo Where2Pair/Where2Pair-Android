@@ -8,5 +8,6 @@
     <string name="title_section3">Section 3</string>
     <string name="title_activity_venues">VenuesActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_locations">LocationsActivity</string>
 
 </resources>
