@@ -1,3 +1,5 @@
+import org.gradle.api.*
+
 buildscript {
     repositories {
         mavenCentral()
@@ -24,4 +26,18 @@ dependencies {
     compile 'org.robobinding:robobinding:0.8.1'
     compile 'com.google.android.gms:play-services:3.2.65'
     compile project(':Where2Pair-Java')
+}
+
+android.applicationVariants.all { variant ->
+    variant.processManifest.doLast {
+        def mapsKeyFile = new File("${projectDir}/maps.key")
+
+        if (!mapsKeyFile.exists()) throw new GradleScriptException(
+                """|Could not find the maps.key file containing the Where2Pair Google Maps api key.
+                   |Please create a maps.key file containing the api key (${mapsKeyFile.absolutePath}).""".stripMargin(), null)
+
+        def apiKey = mapsKeyFile.text
+        def manifest = new File("${buildDir}/manifests/${variant.dirName}/AndroidManifest.xml")
+        manifest.text = manifest.text.replaceAll("%API_KEY%", apiKey)
+    }
 }

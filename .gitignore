@@ -18,7 +18,7 @@ Thumbs.db
 build-eclipse/*
 bin/*
 
-# Gradle Files       #
+# Project-local Files       #
 ######################
 build/*
 .gradle/*
@@ -27,3 +27,4 @@ build/*
 classes/*
 /build-eclipse
 **/bin/*
+maps.key
