@@ -21,13 +21,13 @@ import org.where2pair.VenuesResultAction;
 import retrofit.Callback;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrofitVenueRequesterTest {
+public class RetrofitVenueFinderTest {
 
     private static final SimpleTime CURRENT_TIME = new SimpleTime(12, 30);
     private static final Coordinates CURRENT_LOCATION = new Coordinates(51.520547, -0.082103);
     @Mock VenuesResultAction venuesResultAction;
     @Mock RetrofitVenueService venueService;
-    @InjectMocks RetrofitVenueRequester venueRequester;
+    @InjectMocks RetrofitVenueFinder venueRequester;
 
     @SuppressWarnings("unchecked")
 	@Test
@@ -38,9 +38,7 @@ public class RetrofitVenueRequesterTest {
 
         ArgumentCaptor<String> facilitiesCaptor = ArgumentCaptor.forClass(String.class);
         verify(venueService).requestVenues(eq("51.520547,-0.082103"), eq("12.30"), facilitiesCaptor.capture(), any(Callback.class));
-        String facilities = facilitiesCaptor.getValue();
-
-        assertThat(facilities, containsString("WIFI"));
-        assertThat(facilities, containsString("SEATING"));
+        assertThat(facilitiesCaptor.getValue(), containsString("WIFI"));
+        assertThat(facilitiesCaptor.getValue(), containsString("SEATING"));
     }
 }

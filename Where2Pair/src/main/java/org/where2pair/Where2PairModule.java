@@ -13,7 +13,7 @@ import org.where2pair.presentation.ScreenNavigator;
 import org.where2pair.presentation.TimeProvider;
 import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesViewerPresentationModel;
-import org.where2pair.rest.RetrofitVenueRequester;
+import org.where2pair.rest.RetrofitVenueFinder;
 import org.where2pair.rest.RetrofitVenueService;
 import org.where2pair.rest.RetrofitVenueServiceAdapterFactory;
 
@@ -33,7 +33,7 @@ public class Where2PairModule extends AbstractModule {
                                                                         ScreenNavigator screenNavigator,
                                                                         RetrofitVenueServiceAdapterFactory venueServiceAdapterFactory) {
 
-        VenueFinder venueFinder = new RetrofitVenueRequester(venueServiceAdapterFactory.createRetrofitVenueService());
+        VenueFinder venueFinder = new RetrofitVenueFinder(venueServiceAdapterFactory.createRetrofitVenueService());
 
         return new VenueFinderPresentationModel(venueFinder, timeProvider, locationProvider, venuesViewerPresentationModel, screenNavigator);
     }
@@ -43,17 +43,17 @@ public class Where2PairModule extends AbstractModule {
         return new VenuesViewerPresentationModel();
     }
 
-    @Provides
+    @Provides @Singleton
     public ScreenNavigator getScreenNavigator() {
         return new AndroidScreenNavigator(applicationContext);
     }
 
-    @Provides
+    @Provides @Singleton
     public LocationProvider getLocationProvider() {
         return new AndroidLocationProvider(applicationContext);
     }
 
-    @Provides
+    @Provides @Singleton
     public RetrofitVenueServiceAdapterFactory getVenueServiceAdapterFactory() {
         return new RetrofitVenueServiceAdapterFactory("http://where2pair.herokuapp.com");
     }
