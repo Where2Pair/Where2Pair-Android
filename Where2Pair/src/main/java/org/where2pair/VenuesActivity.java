@@ -1,18 +1,17 @@
 package org.where2pair;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -26,43 +25,86 @@ import org.where2pair.presentation.VenuesViewerPresentationModel;
 
 import roboguice.RoboGuice;
 import roboguice.activity.RoboFragmentActivity;
-import roboguice.inject.InjectView;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
 public class VenuesActivity extends RoboFragmentActivity {
 
-    @InjectView(R.id.venues_pager) ViewPager venuesPager;
+    private Menu menu;
+    private VenuesMapFragment venuesMapFragment;
+    private VenuesListFragment venuesListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.venues_activity);
 
-        venuesPager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
+        if (savedInstanceState == null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.venues_container, new VenuesMapFragment())
+                    .commit();
+        }
+
+        getActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private static class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.venues, menu);
+        hideOption(R.id.show_map);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        @Override
-        public Fragment getItem(int position) {
-            if (position == 0) {
-                return new VenuesMapFragment();
-            }
-
-            return new VenuesListFragment();
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.show_map:
+                showMap();
+                return true;
+            case R.id.show_list:
+                showList();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    public static class VenuesMapFragment extends SupportMapFragment {
+    private void showMap() {
+        hideOption(R.id.show_map);
+        showOption(R.id.show_list);
+
+        if (venuesMapFragment == null) venuesMapFragment = new VenuesMapFragment();
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.venues_container, venuesMapFragment)
+                .commit();
+    }
+
+    private void showList() {
+        hideOption(R.id.show_list);
+        showOption(R.id.show_map);
+
+        if (venuesListFragment == null) venuesListFragment = new VenuesListFragment();
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.venues_container, venuesListFragment)
+                .commit();
+    }
+
+    private void hideOption(int id) {
+        MenuItem item = menu.findItem(id);
+        item.setVisible(false);
+    }
+
+    private void showOption(int id) {
+        MenuItem item = menu.findItem(id);
+        item.setVisible(true);
+    }
+
+    public static class VenuesMapFragment extends MapFragment {
         @Inject VenuesViewerPresentationModel venuesViewerPresentationModel;
         @Inject LocationProvider locationProvider;
 
@@ -76,7 +118,6 @@ public class VenuesActivity extends RoboFragmentActivity {
         public void onResume() {
             final GoogleMap googleMap = getMap();
 
-            //TODO Zoom, Show current location, Show more venue details
             final LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
             LatLng userLatLng = asLatLng(locationProvider.getCurrentLocation());
             googleMap.addMarker(new MarkerOptions()
