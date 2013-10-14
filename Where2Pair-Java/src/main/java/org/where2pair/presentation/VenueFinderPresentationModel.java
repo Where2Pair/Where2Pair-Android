@@ -32,6 +32,17 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		this.screenNavigator = screenNavigator;
 	}
 
+    //bind map onto presentation model?
+    //create a custom adapter that listens to venue change actions?
+    //how about building bounds?
+
+    //This can all be done by adding MenuInflater support
+    //screen navigator has showMap(), showList(), showSearchOptions() actions
+
+    public boolean showMapButtonVisible(){};
+
+    //etc
+
 	public void pressSearchButton() {
 		Coordinates currentLocation = locationProvider.getCurrentLocation();
 		

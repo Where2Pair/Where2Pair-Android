@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 
 import org.robobinding.binder.Binder;
 import org.where2pair.presentation.LocationProvider;
+import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesViewerPresentationModel;
 
 import roboguice.RoboGuice;
@@ -33,6 +34,7 @@ public class VenuesActivity extends RoboFragmentActivity {
     private Menu menu;
     private VenuesMapFragment venuesMapFragment;
     private VenuesListFragment venuesListFragment;
+    @Inject VenueFinderPresentationModel venueFinderPresentationModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +57,19 @@ public class VenuesActivity extends RoboFragmentActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.venues, menu);
         hideOption(R.id.show_map);
+        hideOption(R.id.show_list);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.search_options:
+                showSearchOptions();
+                return true;
+            case R.id.search:
+                search();
+                return true;
             case R.id.show_map:
                 showMap();
                 return true;
@@ -70,6 +79,13 @@ public class VenuesActivity extends RoboFragmentActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void search() {
+        venueFinderPresentationModel.pressSearchButton();
+    }
+
+    private void showSearchOptions() {
     }
 
     private void showMap() {
