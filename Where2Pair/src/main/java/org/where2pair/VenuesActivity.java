@@ -122,17 +122,20 @@ public class VenuesActivity extends RoboFragmentActivity {
             LatLng userLatLng = asLatLng(locationProvider.getCurrentLocation());
             googleMap.addMarker(new MarkerOptions()
                     .position(userLatLng)
+                    .title("Me")
                     .icon(defaultMarker(220)));
             boundsBuilder.include(userLatLng);
 
-            for (VenueWithDistance venueWithDistance : Lists.partition(venuesViewerPresentationModel.getVenues(), 15).get(0)) {
-                Venue venue = venueWithDistance.venue;
-                LatLng latLng = asLatLng(venue.getLocation());
-                googleMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title(venue.getName())
-                        .snippet(venue.getAddress().addressLine1));
-                boundsBuilder.include(latLng);
+            if (venuesViewerPresentationModel.getVenues().size() > 0) {
+                for (VenueWithDistance venueWithDistance : Lists.partition(venuesViewerPresentationModel.getVenues(), 15).get(0)) {
+                    Venue venue = venueWithDistance.venue;
+                    LatLng latLng = asLatLng(venue.getLocation());
+                    googleMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(venue.getName())
+                            .snippet(venue.getAddress().addressLine1 + "\n" + String.format("%.2f", venueWithDistance.distance.get("location")) + "km"));
+                    boundsBuilder.include(latLng);
+                }
             }
 
             googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
