@@ -9,15 +9,16 @@ import static org.where2pair.TestUtils.sampleVenues
 import static spock.util.matcher.HamcrestSupport.that
 
 import org.where2pair.Coordinates
-import org.where2pair.SearchRequestMatcher
 import org.where2pair.SimpleTime
 import org.where2pair.VenueFinder
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class VenueFinderPresentationModelSpec extends Specification {
 
-	def "only search and search options buttons should be visible at first"() {
+	@Unroll
+	def "at first, view: #view should be visible: #visibilityExpectation"() {
 		when:
 		initializePresentationModel()
 		
@@ -33,7 +34,8 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'loadingIcon'			| false
 	}
 	
-	def "whilst searching for venues loading icon should be visible"() {
+	@Unroll
+	def "whilst searching for venues, view: #view should be visible: #visibilityExpectation"() {
 		given:
 		initializePresentationModel()
 		
@@ -52,11 +54,13 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'loadingIcon'			| true
 	}
 	
-	def "when searching for venues completes, list button should be visible"() {
+	@Unroll
+	def "when searching for venues completes, view: #view should be visible: #visibilityExpectation"() {
 		given:
 		initializePresentationModel()
 		
 		when:
+		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound([])
 		
 		then:
@@ -70,7 +74,52 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'listButton'			| true
 		'loadingIcon'			| false
 	}
+	
+	@Unroll
+	def "when map button pressed, view: #view should be visible: #visibilityExpectation"() {
+		given:
+		initializePresentationModel()
+		
+		when:
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.notifyVenuesFound([])
+		venueFinderPresentationModel.listButtonPressed()
+		venueFinderPresentationModel.mapButtonPressed()
+		
+		then:
+		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
+		
+		where:
+		view 					| visibilityExpectation
+		'searchButton' 			| false
+		'searchOptionsButton' 	| false
+		'mapButton'				| false
+		'listButton'			| true
+		'loadingIcon'			| false
+	}
 
+	@Unroll
+	def "when list button pressed, view: #view should be visible: #visibilityExpectation"() {
+		given:
+		initializePresentationModel()
+		
+		when:
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.notifyVenuesFound([])
+		venueFinderPresentationModel.listButtonPressed()
+		
+		then:
+		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
+		
+		where:
+		view 					| visibilityExpectation
+		'searchButton' 			| false
+		'searchOptionsButton' 	| false
+		'mapButton'				| true
+		'listButton'			| false
+		'loadingIcon'			| false
+	}
+	
 	def "current location should be visible as user location at first"() {
 		given:
 		locationProvider.getCurrentLocation() >> CURRENT_LOCATION
@@ -165,9 +214,32 @@ class VenueFinderPresentationModelSpec extends Specification {
 		0 * venueFinder.findVenues(_, _)
 	}
 	
+	def "when map button is pressed, delegate to transition handler"() {
+		given:
+		initializePresentationModel()
+		
+		when:
+		venueFinderPresentationModel.mapButtonPressed()
+		
+		then:
+		1 * venuesViewTransitioner.showMap()
+	}
+	
+	def "when list button is pressed, delegate to transition handler"() {
+		given:
+		initializePresentationModel()
+		
+		when:
+		venueFinderPresentationModel.listButtonPressed()
+		
+		then:
+		1 * venuesViewTransitioner.showList()
+	}
+	
 	def initializePresentationModel() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
 				venueFinder, locationProvider, timeProvider, userLocationsObserver, venuesObserver)
+		venueFinderPresentationModel.venuesViewTransitioner = venuesViewTransitioner
 	}
 	
 	static final SimpleTime CURRENT_TIME = new SimpleTime(12, 30);
@@ -175,6 +247,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	VenueFinder venueFinder = Mock()
 	LocationProvider locationProvider = Mock()
 	TimeProvider timeProvider = Mock()
+	VenuesViewTransitioner venuesViewTransitioner = Mock()
 	UserLocationsObserver userLocationsObserver = Mock()
 	VenuesObserver venuesObserver = Mock()
 	VenueFinderPresentationModel venueFinderPresentationModel

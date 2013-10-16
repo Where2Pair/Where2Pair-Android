@@ -22,6 +22,7 @@ public class VenueFinderPresentationModel extends AbstractPresentationModel impl
 	private VenueFinder venueFinder;
 	private LocationProvider locationProvider;
 	private TimeProvider timeProvider;
+	private VenuesViewTransitioner venuesViewTransitioner;
 	private UserLocationsObserver userLocationsObserver;
 	private VenuesObserver venuesObserver;
 	private List<VenueWithDistance> venues;
@@ -99,6 +100,21 @@ public class VenueFinderPresentationModel extends AbstractPresentationModel impl
 		
 	}
 	
+	public void mapButtonPressed() {
+		setSearchButtonVisible(false);
+		setSearchOptionsButtonVisible(false);
+		setLoadingIconVisible(false);
+		setListButtonVisible(true);
+		setMapButtonVisible(false);
+		venuesViewTransitioner.showMap();
+	}
+	
+	public void listButtonPressed() {
+		setListButtonVisible(false);
+		setMapButtonVisible(true);
+		venuesViewTransitioner.showList();
+	}
+	
 	public boolean isSearchButtonVisible() {
 		return searchButtonVisible;
 	}
@@ -137,6 +153,10 @@ public class VenueFinderPresentationModel extends AbstractPresentationModel impl
 
 	public void setLoadingIconVisible(boolean loadingIconVisible) {
 		this.loadingIconVisible = loadingIconVisible;
+	}
+
+	public void setVenuesViewTransitioner(VenuesViewTransitioner venuesViewTransitioner) {
+		this.venuesViewTransitioner = venuesViewTransitioner;
 	}
 
 }
