@@ -1,72 +1,103 @@
 package org.where2pair.presentation;
 
-import static org.where2pair.SearchRequestBuilder.aSearchRequest;
-import static org.where2pair.presentation.Screen.LOCATIONS_VIEW;
-import static org.where2pair.presentation.Screen.VENUES_VIEW;
+import static com.google.common.collect.Lists.newArrayList;
 
 import java.util.List;
 
+import org.robobinding.presentationmodel.AbstractPresentationModel;
+import org.robobinding.presentationmodel.ItemPresentationModel;
 import org.where2pair.Coordinates;
-import org.where2pair.SearchRequest;
-import org.where2pair.SimpleTime;
-import org.where2pair.VenueFinder;
 import org.where2pair.VenueWithDistance;
-import org.where2pair.VenuesResultAction;
-import org.where2pair.VenuesResultActionHandler;
 
-public class VenueFinderPresentationModel implements VenuesResultActionHandler {
-	private VenueFinder venueFinder;
-	private TimeProvider timeProvider;
+public class VenueFinderPresentationModel extends AbstractPresentationModel {
+
 	private LocationProvider locationProvider;
-	private VenuesViewerPresentationModel venuesViewerPresentationModel;
-	private ScreenNavigator screenNavigator;
+	private UserLocationsObserver userLocationsObserver;
+	private List<VenueWithDistance> venues;
+	private boolean searchButtonVisible;
+	private boolean searchOptionsButtonVisible;
+	private boolean mapButtonVisible;
+	private boolean listButtonVisible;
+	private boolean loadingIconVisible;
 
-	public VenueFinderPresentationModel(VenueFinder venueFinder,
-			TimeProvider timeProvider, LocationProvider locationProvider,
-			VenuesViewerPresentationModel venuesViewerPresentationModel,
-			ScreenNavigator screenNavigator) {
-		this.venueFinder = venueFinder;
-		this.timeProvider = timeProvider;
+	public VenueFinderPresentationModel(LocationProvider locationProvider, UserLocationsObserver userLocationsObserver) {
 		this.locationProvider = locationProvider;
-		this.venuesViewerPresentationModel = venuesViewerPresentationModel;
-		this.screenNavigator = screenNavigator;
+		this.userLocationsObserver = userLocationsObserver;
+		searchButtonVisible = true;
+		searchOptionsButtonVisible = true;
+	}
+	
+	@ItemPresentationModel(VenueItemPresentationModel.class)
+	public List<VenueWithDistance> getVenues() {
+		return venues;
 	}
 
-    //bind map onto presentation model?
-    //create a custom adapter that listens to venue change actions?
-    //how about building bounds?
+	public void setVenues(List<VenueWithDistance> venues) {
+		this.venues = venues;
+	}
 
-    //This can all be done by adding MenuInflater support
-    //screen navigator has showMap(), showList(), showSearchOptions() actions
-
-    public boolean showMapButtonVisible(){};
-
-    //etc
-
-	public void pressSearchButton() {
+	public List<Coordinates> getUserLocations() {
 		Coordinates currentLocation = locationProvider.getCurrentLocation();
 		
-		if (currentLocation == null) 
-			screenNavigator.navigateTo(LOCATIONS_VIEW);
-		else 
-			requestVenuesFromServer(currentLocation);
+		if (currentLocation == null) return newArrayList();
+		
+		return newArrayList(currentLocation);
+	}
+	
+	public void searchButtonPressed() {
+		setSearchButtonVisible(false);
+		setSearchOptionsButtonVisible(false);
+		setLoadingIconVisible(true);
 	}
 
-	private void requestVenuesFromServer(Coordinates currentLocation) {
-		SimpleTime currentTime = timeProvider.getCurrentTime();
-		SearchRequest searchRequest = aSearchRequest().openFrom(currentTime).near(currentLocation).withWifi().withSeating().build();
-		venueFinder.findVenues(searchRequest, new VenuesResultAction(this));
-	}
-
-	@Override
 	public void notifyVenuesFound(List<VenueWithDistance> venues) {
-		venuesViewerPresentationModel.setVenues(venues);
-		screenNavigator.navigateTo(VENUES_VIEW);
+		setSearchButtonVisible(false);
+		setSearchOptionsButtonVisible(false);
+		setLoadingIconVisible(false);
+		setListButtonVisible(true);
+	}
+	
+	public void addUserLocation(Coordinates location) {
+		userLocationsObserver.notifyLocationAdded(location);
+	}
+	
+	public boolean isSearchButtonVisible() {
+		return searchButtonVisible;
 	}
 
-    @Override
-    public void notifyVenuesFindingFailed(String reason) {
+	public void setSearchButtonVisible(boolean searchButtonVisible) {
+		this.searchButtonVisible = searchButtonVisible;
+	}
 
-    }
+	public boolean isSearchOptionsButtonVisible() {
+		return searchOptionsButtonVisible;
+	}
 
+	public void setSearchOptionsButtonVisible(boolean searchOptionsButtonVisible) {
+		this.searchOptionsButtonVisible = searchOptionsButtonVisible;
+	}
+
+	public boolean isMapButtonVisible() {
+		return mapButtonVisible;
+	}
+
+	public void setMapButtonVisible(boolean mapButtonVisible) {
+		this.mapButtonVisible = mapButtonVisible;
+	}
+
+	public boolean isListButtonVisible() {
+		return listButtonVisible;
+	}
+
+	public void setListButtonVisible(boolean listButtonVisible) {
+		this.listButtonVisible = listButtonVisible;
+	}
+
+	public boolean isLoadingIconVisible() {
+		return loadingIconVisible;
+	}
+
+	public void setLoadingIconVisible(boolean loadingIconVisible) {
+		this.loadingIconVisible = loadingIconVisible;
+	}
 }

@@ -34,9 +34,9 @@ public class VenueFinderPresentationModelTest {
 	@Mock VenueFinder venueFinder;
 	@Mock TimeProvider timeProvider;
 	@Mock LocationProvider locationProvider;
-	@Mock VenuesViewerPresentationModel venuesViewerPresentationModel;
+	@Mock VenueFinderPresentationModel venuesViewerPresentationModel;
 	@Mock ScreenNavigator screenNavigator;
-	@InjectMocks VenueFinderPresentationModel venueFinderPresentationModel;
+	@InjectMocks VenueFinderPresentationModelOld venueFinderPresentationModel;
 	
 	@Test
 	public void findsOpenVenuesNearCurrentLocationWithWifiAndSeatingWhenSearchButtonIsPressed() {
