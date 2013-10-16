@@ -51,6 +51,10 @@ public class VenuesActivity extends RoboFragmentActivity {
         getActionBar().setDisplayShowTitleEnabled(false);
     }
 
+    //Can I create my own options menu? ActionBar?
+
+    //Need to create a horizontal container with the action bar style
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
@@ -133,6 +137,13 @@ public class VenuesActivity extends RoboFragmentActivity {
         @Override
         public void onResume() {
             final GoogleMap googleMap = getMap();
+
+            googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(LatLng latLng) {
+
+                }
+            });
 
             final LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
             LatLng userLatLng = asLatLng(locationProvider.getCurrentLocation());

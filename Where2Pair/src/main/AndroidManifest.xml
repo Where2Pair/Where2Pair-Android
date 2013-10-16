@@ -42,10 +42,6 @@
             android:name="org.where2pair.VenuesActivity"
             android:label="@string/title_activity_venues" >
         </activity>
-        <activity
-            android:name="org.where2pair.LocationsActivity"
-            android:label="@string/title_activity_locations" >
-        </activity>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

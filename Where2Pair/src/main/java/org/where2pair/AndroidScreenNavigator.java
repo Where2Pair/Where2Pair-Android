@@ -19,10 +19,7 @@ public class AndroidScreenNavigator implements ScreenNavigator {
     @Override
     public void navigateTo(Screen screen) {
         Intent intent;
-        if (screen == VENUES_VIEW)
-            intent = new Intent(context, VenuesActivity.class);
-        else
-            intent = new Intent(context, LocationsActivity.class);
+        intent = new Intent(context, VenuesActivity.class);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
