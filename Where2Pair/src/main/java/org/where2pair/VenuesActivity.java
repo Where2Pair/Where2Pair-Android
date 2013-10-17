@@ -2,6 +2,7 @@ package org.where2pair;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,6 @@ import org.where2pair.presentation.UserLocationsObserver;
 import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesObserver;
 import org.where2pair.presentation.VenuesViewTransitioner;
-import org.where2pair.presentation.VenuesViewerPresentationModel;
 
 import roboguice.RoboGuice;
 import roboguice.activity.RoboFragmentActivity;
@@ -71,13 +71,6 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             RoboGuice.getInjector(getActivity()).injectMembersWithoutViews(this);
-            googleMap = getMap();
-            googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-                @Override
-                public void onMapLongClick(LatLng latLng) {
-                    venueFinderPresentationModel.addUserLocation(asCoordinates(latLng));
-                }
-            });
 
             venueFinderPresentationModel.setVenuesObserver(this);
             venueFinderPresentationModel.setUserLocationsObserver(this);
@@ -87,15 +80,22 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
         public void onResume() {
             super.onResume();
 
+            googleMap = getMap();
+            googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(LatLng latLng) {
+                    venueFinderPresentationModel.addUserLocation(asCoordinates(latLng));
+                }
+            });
+
             if (venueFinderPresentationModel.getUserLocations().isEmpty()) return;
 
+            for (Coordinates userLocation : venueFinderPresentationModel.getUserLocations()) {
+                notifyLocationAdded(userLocation);
+            }
+
             final LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-            LatLng userLatLng = asLatLng(venueFinderPresentationModel.getUserLocations().get(0));
-            googleMap.addMarker(new MarkerOptions()
-                    .position(userLatLng)
-                    .title("Me")
-                    .icon(defaultMarker(220)));
-            boundsBuilder.include(userLatLng);
+            ensureCameraBoundsForUserLocations(boundsBuilder);
 
             googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                 @Override
@@ -104,7 +104,6 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
                     googleMap.setOnCameraChangeListener(null);
                 }
             });
-
         }
 
         @Override

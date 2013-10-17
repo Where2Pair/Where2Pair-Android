@@ -1,10 +1,11 @@
 package org.where2pair.presentation;
 
 import org.robobinding.itempresentationmodel.ItemPresentationModel;
-import org.robobinding.presentationmodel.AbstractPresentationModel;
+import org.robobinding.presentationmodel.PresentationModel;
 import org.where2pair.VenueWithDistance;
 
-public class VenueItemPresentationModel extends AbstractPresentationModel implements ItemPresentationModel<VenueWithDistance> {
+@PresentationModel
+public class VenueItemPresentationModel implements ItemPresentationModel<VenueWithDistance> {
 
 	private VenueWithDistance venueWithDistance;
 
@@ -23,9 +24,6 @@ public class VenueItemPresentationModel extends AbstractPresentationModel implem
 	@Override
 	public void updateData(int index, VenueWithDistance venueWithDistance) {
 		this.venueWithDistance = venueWithDistance;
-		this.presentationModelChangeSupport.firePropertyChange("name");
-		this.presentationModelChangeSupport.firePropertyChange("address");
-		this.presentationModelChangeSupport.firePropertyChange("distance");
 	}
 
 }

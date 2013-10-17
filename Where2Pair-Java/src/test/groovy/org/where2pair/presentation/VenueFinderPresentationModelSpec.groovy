@@ -21,7 +21,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	def "at first, view: #view should be visible: #visibilityExpectation"() {
 		when:
 		initializePresentationModel()
-		
+
 		then:
 		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
 		
@@ -37,6 +37,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	@Unroll
 	def "whilst searching for venues, view: #view should be visible: #visibilityExpectation"() {
 		given:
+		locationProvider.getCurrentLocation() >> CURRENT_LOCATION
 		initializePresentationModel()
 		
 		when:
@@ -176,7 +177,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		venueFinderPresentationModel.getUserLocations().contains(anotherNewLocation)
 	}
 	
-	def "when venues are updated notifies venues observer"() {
+	def "when venues are updated sets venues and notifies venues observer"() {
 		given:
 		def venues = sampleVenues()
 		initializePresentationModel()
@@ -186,6 +187,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		
 		then:
 		1 * venuesObserver.notifyVenuesUpdated()
+		venueFinderPresentationModel.venues == venues
 	}
 	
 	def "when search button is pressed finds open venues near current location with wifi and seating"() {
@@ -212,6 +214,9 @@ class VenueFinderPresentationModelSpec extends Specification {
 		
 		then:
 		0 * venueFinder.findVenues(_, _)
+		venueFinderPresentationModel.searchButtonVisible
+		venueFinderPresentationModel.searchOptionsButtonVisible
+		!venueFinderPresentationModel.loadingIconVisible
 	}
 	
 	def "when map button is pressed, delegate to transition handler"() {

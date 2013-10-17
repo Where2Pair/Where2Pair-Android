@@ -5,8 +5,8 @@ import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 
 import java.util.List;
 
-import org.robobinding.presentationmodel.AbstractPresentationModel;
 import org.robobinding.presentationmodel.ItemPresentationModel;
+import org.robobinding.presentationmodel.PresentationModel;
 import org.where2pair.Coordinates;
 import org.where2pair.SearchRequest;
 import org.where2pair.SimpleTime;
@@ -17,7 +17,8 @@ import org.where2pair.VenuesResultActionHandler;
 
 import com.google.common.collect.ImmutableList;
 
-public class VenueFinderPresentationModel extends AbstractPresentationModel implements VenuesResultActionHandler {
+@PresentationModel
+public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 
 	private VenueFinder venueFinder;
 	private LocationProvider locationProvider;
@@ -69,11 +70,13 @@ public class VenueFinderPresentationModel extends AbstractPresentationModel impl
 	}
 	
 	public void searchButtonPressed() {
+		if (userLocations.isEmpty()) return;
+		
 		setSearchButtonVisible(false);
 		setSearchOptionsButtonVisible(false);
 		setLoadingIconVisible(true);
 		
-		if (userLocations.size() > 0) requestVenuesFromServer(userLocations.get(0));
+		requestVenuesFromServer(userLocations.get(0));
 	}
 
 	private void requestVenuesFromServer(Coordinates currentLocation) {
@@ -84,6 +87,7 @@ public class VenueFinderPresentationModel extends AbstractPresentationModel impl
 	
 	@Override
 	public void notifyVenuesFound(List<VenueWithDistance> venues) {
+		setVenues(venues);
 		setSearchButtonVisible(false);
 		setSearchOptionsButtonVisible(false);
 		setLoadingIconVisible(false);
