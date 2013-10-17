@@ -3,9 +3,6 @@ package org.where2pair;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,8 +17,10 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 import org.robobinding.binder.Binder;
-import org.where2pair.presentation.LocationProvider;
+import org.where2pair.presentation.UserLocationsObserver;
 import org.where2pair.presentation.VenueFinderPresentationModel;
+import org.where2pair.presentation.VenuesObserver;
+import org.where2pair.presentation.VenuesViewTransitioner;
 import org.where2pair.presentation.VenuesViewerPresentationModel;
 
 import roboguice.RoboGuice;
@@ -29,141 +28,74 @@ import roboguice.activity.RoboFragmentActivity;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
-public class VenuesActivity extends RoboFragmentActivity {
+public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTransitioner {
 
-    private Menu menu;
-    private VenuesMapFragment venuesMapFragment;
-    private VenuesListFragment venuesListFragment;
+    private VenuesMapFragment venuesMapFragment = new VenuesMapFragment();
+    private VenuesListFragment venuesListFragment = new VenuesListFragment();
     @Inject VenueFinderPresentationModel venueFinderPresentationModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.venues_activity);
+        Binder.bind(this, R.layout.venues_activity, venueFinderPresentationModel);
+
+        venueFinderPresentationModel.setVenuesViewTransitioner(this);
 
         if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.venues_container, new VenuesMapFragment())
+                    .add(R.id.venues_container, venuesMapFragment)
                     .commit();
         }
-
-        getActionBar().setDisplayShowTitleEnabled(false);
-    }
-
-    //Can I create my own options menu? ActionBar?
-
-    //Need to create a horizontal container with the action bar style
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.venues, menu);
-        hideOption(R.id.show_map);
-        hideOption(R.id.show_list);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.search_options:
-                showSearchOptions();
-                return true;
-            case R.id.search:
-                search();
-                return true;
-            case R.id.show_map:
-                showMap();
-                return true;
-            case R.id.show_list:
-                showList();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void search() {
-        venueFinderPresentationModel.pressSearchButton();
-    }
-
-    private void showSearchOptions() {
-    }
-
-    private void showMap() {
-        hideOption(R.id.show_map);
-        showOption(R.id.show_list);
-
-        if (venuesMapFragment == null) venuesMapFragment = new VenuesMapFragment();
-
+    public void showMap() {
         getFragmentManager().beginTransaction()
                 .replace(R.id.venues_container, venuesMapFragment)
                 .commit();
     }
 
-    private void showList() {
-        hideOption(R.id.show_list);
-        showOption(R.id.show_map);
-
-        if (venuesListFragment == null) venuesListFragment = new VenuesListFragment();
-
+    @Override
+    public void showList() {
         getFragmentManager().beginTransaction()
                 .replace(R.id.venues_container, venuesListFragment)
                 .commit();
     }
 
-    private void hideOption(int id) {
-        MenuItem item = menu.findItem(id);
-        item.setVisible(false);
-    }
-
-    private void showOption(int id) {
-        MenuItem item = menu.findItem(id);
-        item.setVisible(true);
-    }
-
-    public static class VenuesMapFragment extends MapFragment {
-        @Inject VenuesViewerPresentationModel venuesViewerPresentationModel;
-        @Inject LocationProvider locationProvider;
+    public static class VenuesMapFragment extends MapFragment implements UserLocationsObserver, VenuesObserver {
+        @Inject VenueFinderPresentationModel venueFinderPresentationModel;
+        private GoogleMap googleMap;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             RoboGuice.getInjector(getActivity()).injectMembersWithoutViews(this);
+            googleMap = getMap();
+            googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(LatLng latLng) {
+                    venueFinderPresentationModel.addUserLocation(asCoordinates(latLng));
+                }
+            });
+
+            venueFinderPresentationModel.setVenuesObserver(this);
+            venueFinderPresentationModel.setUserLocationsObserver(this);
         }
 
         @Override
         public void onResume() {
-            final GoogleMap googleMap = getMap();
+            super.onResume();
 
-            googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-                @Override
-                public void onMapLongClick(LatLng latLng) {
-
-                }
-            });
+            if (venueFinderPresentationModel.getUserLocations().isEmpty()) return;
 
             final LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-            LatLng userLatLng = asLatLng(locationProvider.getCurrentLocation());
+            LatLng userLatLng = asLatLng(venueFinderPresentationModel.getUserLocations().get(0));
             googleMap.addMarker(new MarkerOptions()
                     .position(userLatLng)
                     .title("Me")
                     .icon(defaultMarker(220)));
             boundsBuilder.include(userLatLng);
-
-            if (venuesViewerPresentationModel.getVenues().size() > 0) {
-                for (VenueWithDistance venueWithDistance : Lists.partition(venuesViewerPresentationModel.getVenues(), 15).get(0)) {
-                    Venue venue = venueWithDistance.venue;
-                    LatLng latLng = asLatLng(venue.getLocation());
-                    googleMap.addMarker(new MarkerOptions()
-                            .position(latLng)
-                            .title(venue.getName())
-                            .snippet(venue.getAddress().addressLine1 + "\n" + String.format("%.2f", venueWithDistance.distance.get("location")) + "km"));
-                    boundsBuilder.include(latLng);
-                }
-            }
 
             googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                 @Override
@@ -173,16 +105,54 @@ public class VenuesActivity extends RoboFragmentActivity {
                 }
             });
 
-            super.onResume();
+        }
+
+        @Override
+        public void notifyLocationAdded(Coordinates location) {
+            googleMap.addMarker(new MarkerOptions()
+                    .position(asLatLng(location))
+                    .icon(defaultMarker(220)));
+        }
+
+        @Override
+        public void notifyVenuesUpdated() {
+            if (venueFinderPresentationModel.getVenues().isEmpty()) return;
+
+            LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+            ensureCameraBoundsForUserLocations(boundsBuilder);
+            ensureCameraBoundsAndAddMarkersForVenues(boundsBuilder);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 25));
+        }
+
+        private void ensureCameraBoundsForUserLocations(LatLngBounds.Builder boundsBuilder) {
+            for (Coordinates userLocation : venueFinderPresentationModel.getUserLocations()) {
+                boundsBuilder.include(asLatLng(userLocation));
+            }
+        }
+
+        private void ensureCameraBoundsAndAddMarkersForVenues(LatLngBounds.Builder boundsBuilder) {
+            for (VenueWithDistance venueWithDistance : Lists.partition(venueFinderPresentationModel.getVenues(), 15).get(0)) {
+                Venue venue = venueWithDistance.venue;
+                LatLng latLng = asLatLng(venue.getLocation());
+                googleMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(venue.getName())
+                        .snippet(venue.getAddress().addressLine1 + "\n" + String.format("%.2f", venueWithDistance.distance.get("location")) + "km"));
+                boundsBuilder.include(latLng);
+            }
         }
 
         private LatLng asLatLng(Coordinates location) {
             return new LatLng(location.latitude, location.longitude);
         }
+
+        private Coordinates asCoordinates(LatLng location) {
+            return new Coordinates(location.latitude, location.longitude);
+        }
     }
 
     public static class VenuesListFragment extends Fragment {
-        @Inject VenuesViewerPresentationModel venuesViewerPresentationModel;
+        @Inject VenueFinderPresentationModel venuesFinderPresentationModel;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -192,7 +162,7 @@ public class VenuesActivity extends RoboFragmentActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return Binder.bindView(getActivity(), R.layout.venues_list, venuesViewerPresentationModel);
+            return Binder.bindView(getActivity(), R.layout.venues_list, venuesFinderPresentationModel);
         }
     }
 }

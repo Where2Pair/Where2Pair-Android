@@ -238,7 +238,9 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def initializePresentationModel() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
-				venueFinder, locationProvider, timeProvider, userLocationsObserver, venuesObserver)
+				venueFinder, locationProvider, timeProvider)
+		venueFinderPresentationModel.userLocationsObserver = userLocationsObserver
+		venueFinderPresentationModel.venuesObserver = venuesObserver
 		venueFinderPresentationModel.venuesViewTransitioner = venuesViewTransitioner
 	}
 	

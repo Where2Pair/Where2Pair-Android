@@ -33,13 +33,10 @@ public class VenueFinderPresentationModel extends AbstractPresentationModel impl
 	private boolean listButtonVisible;
 	private boolean loadingIconVisible;
 
-	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, 
-			TimeProvider timeProvider, UserLocationsObserver userLocationsObserver, VenuesObserver venuesObserver) {
+	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, TimeProvider timeProvider) {
 		this.venueFinder = venueFinder;
 		this.locationProvider = locationProvider;
 		this.timeProvider = timeProvider;
-		this.userLocationsObserver = userLocationsObserver;
-		this.venuesObserver = venuesObserver;
 		setDefaults();
 	}
 
@@ -157,6 +154,14 @@ public class VenueFinderPresentationModel extends AbstractPresentationModel impl
 
 	public void setVenuesViewTransitioner(VenuesViewTransitioner venuesViewTransitioner) {
 		this.venuesViewTransitioner = venuesViewTransitioner;
+	}
+
+	public void setUserLocationsObserver(UserLocationsObserver userLocationsObserver) {
+		this.userLocationsObserver = userLocationsObserver;
+	}
+
+	public void setVenuesObserver(VenuesObserver venuesObserver) {
+		this.venuesObserver = venuesObserver;
 	}
 
 }
