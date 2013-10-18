@@ -17,6 +17,24 @@ import spock.lang.Unroll
 
 class VenueFinderPresentationModelSpec extends Specification {
 
+	def "when there are no user locations or venues to display, then there are no markers to render on the map"() {
+		given:
+		initializePresentationModel()
+		
+		when:
+		if (hasUserLocations) venueFinderPresentationModel.mapLongPressed(CURRENT_LOCATION)
+		if (hasVenues) venueFinderPresentationModel.setVenues(sampleVenues())
+		
+		then:
+		venueFinderPresentationModel.hasMapMarkersToDisplay() == expectsHasMapMarkersToDisplay
+		
+		where:
+		hasUserLocations 	| hasVenues | expectsHasMapMarkersToDisplay
+		false				| false		| false
+		false				| true 		| true
+		true				| false		| true
+	}
+	
 	@Unroll
 	def "at first, view: #view should be visible: #visibilityExpectation"() {
 		when:
@@ -144,37 +162,31 @@ class VenueFinderPresentationModelSpec extends Specification {
 		userLocations == []
 	}
 	
-	def "when a new user location is added notifies user locations observer"() {
+	def "when the map is long-pressed a new location is added"() {
 		given:
 		def newLocation = new Coordinates(1.0, 0.1)
 		initializePresentationModel()
 		
 		when:
-		venueFinderPresentationModel.addUserLocation(newLocation)
+		venueFinderPresentationModel.mapLongPressed(newLocation)
 		
 		then:
-		1 * userLocationsObserver.notifyLocationAdded(newLocation)
+		1 * userLocationsObserver.notifyUserLocationAdded(newLocation)
+		venueFinderPresentationModel.getUserLocations() == [newLocation]
 	}
 	
-	def "when a new user location is added then should return new location in locations"() {
+	def "when viewing venue search results then long-presses on map do nothing"() {
 		given:
-		def newLocation = new Coordinates(2.0, 0.2)
-		def anotherNewLocation = new Coordinates(3.0, 0.3)
 		initializePresentationModel()
 		
 		when:
-		venueFinderPresentationModel.addUserLocation(newLocation)
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.notifyVenuesFound([])
+		venueFinderPresentationModel.mapLongPressed(CURRENT_LOCATION)
 		
 		then:
-		venueFinderPresentationModel.getUserLocations().size() == 1
-		venueFinderPresentationModel.getUserLocations().contains(newLocation)
-		
-		when:
-		venueFinderPresentationModel.addUserLocation(anotherNewLocation)
-		
-		then:
-		venueFinderPresentationModel.getUserLocations().size() == 2
-		venueFinderPresentationModel.getUserLocations().contains(anotherNewLocation)
+		0 * userLocationsObserver.notifyUserLocationAdded(CURRENT_LOCATION)
+		venueFinderPresentationModel.getUserLocations() == []
 	}
 	
 	def "when venues are updated sets venues and notifies venues observer"() {

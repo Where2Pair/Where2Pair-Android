@@ -33,6 +33,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private boolean mapButtonVisible;
 	private boolean listButtonVisible;
 	private boolean loadingIconVisible;
+	private boolean viewingVenueSearchResults;
 
 	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, TimeProvider timeProvider) {
 		this.venueFinder = venueFinder;
@@ -64,9 +65,11 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		return ImmutableList.copyOf(userLocations);
 	}
 	
-	public void addUserLocation(Coordinates location) {
-		userLocations.add(location);
-		userLocationsObserver.notifyLocationAdded(location);
+	public void mapLongPressed(Coordinates coordinates) {
+		if (viewingVenueSearchResults) return;
+		
+		userLocations.add(coordinates);
+		userLocationsObserver.notifyUserLocationAdded(coordinates);
 	}
 	
 	public void searchButtonPressed() {
@@ -87,6 +90,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	
 	@Override
 	public void notifyVenuesFound(List<VenueWithDistance> venues) {
+		viewingVenueSearchResults = true;
 		setVenues(venues);
 		setSearchButtonVisible(false);
 		setSearchOptionsButtonVisible(false);
@@ -99,6 +103,10 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	public void notifyVenuesFindingFailed(String reason) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public boolean hasMapMarkersToDisplay() {
+		return !venues.isEmpty() || !userLocations.isEmpty();
 	}
 	
 	public void mapButtonPressed() {
