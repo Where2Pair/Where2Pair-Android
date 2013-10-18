@@ -2,7 +2,6 @@ package org.where2pair.activity;
 
 import android.os.Bundle;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -20,6 +19,8 @@ import org.where2pair.presentation.VenuesObserver;
 
 import roboguice.RoboGuice;
 
+import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds;
+import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
 public class VenuesMapFragment extends MapFragment implements UserLocationsObserver, VenuesObserver {
@@ -54,12 +55,12 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
             googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                 @Override
                 public void onCameraChange(CameraPosition cameraPosition) {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 25));
+                    googleMap.animateCamera(newLatLngBounds(boundsBuilder.build(), 25));
                     googleMap.setOnCameraChangeListener(null);
                 }
             });
         } else {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LONDON, 15));
+            googleMap.animateCamera(newLatLngZoom(LONDON, 10));
         }
     }
 
@@ -78,7 +79,7 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
     public void notifyVenuesUpdated() {
         googleMap.clear();
         LatLngBounds.Builder boundsBuilder = ensureCameraBoundsAndAddMarkers();
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 25));
+        googleMap.animateCamera(newLatLngBounds(boundsBuilder.build(), 25));
     }
 
     private LatLngBounds.Builder ensureCameraBoundsAndAddMarkers() {
