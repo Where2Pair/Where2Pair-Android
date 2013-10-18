@@ -1,8 +1,6 @@
-package org.where2pair;
+package org.where2pair.activity;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Vibrator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +11,9 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.inject.Inject;
 
+import org.where2pair.Coordinates;
+import org.where2pair.Venue;
+import org.where2pair.VenueWithDistance;
 import org.where2pair.presentation.UserLocationsObserver;
 import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesObserver;
@@ -65,8 +66,6 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
     @Override
     public void notifyUserLocationAdded(Coordinates location) {
         addUserLocationMarker(location);
-        Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(250);
     }
 
     private void addUserLocationMarker(Coordinates location) {

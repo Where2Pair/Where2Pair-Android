@@ -14,13 +14,13 @@ import org.where2pair.presentation.LocationProvider;
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 
-public class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, OnConnectionFailedListener {
+class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, OnConnectionFailedListener {
 
     private LocationClient locationClient;
     private int googlePlayServicesAvailable;
     private ConnectionResult connectionResult;
 
-    public AndroidLocationProvider(Context context) {
+    AndroidLocationProvider(Context context) {
         googlePlayServicesAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
 
         if (googlePlayServicesAvailable == ConnectionResult.SUCCESS) {

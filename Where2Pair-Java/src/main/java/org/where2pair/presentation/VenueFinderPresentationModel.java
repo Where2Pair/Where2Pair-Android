@@ -23,6 +23,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private VenueFinder venueFinder;
 	private LocationProvider locationProvider;
 	private TimeProvider timeProvider;
+	private DeviceVibrator deviceVibrator;
 	private VenuesViewTransitioner venuesViewTransitioner;
 	private UserLocationsObserver userLocationsObserver;
 	private VenuesObserver venuesObserver;
@@ -35,10 +36,12 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private boolean loadingIconVisible;
 	private boolean viewingVenueSearchResults;
 
-	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, TimeProvider timeProvider) {
+	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, 
+			TimeProvider timeProvider, DeviceVibrator deviceVibrator) {
 		this.venueFinder = venueFinder;
 		this.locationProvider = locationProvider;
 		this.timeProvider = timeProvider;
+		this.deviceVibrator = deviceVibrator;
 		setDefaults();
 	}
 
@@ -70,6 +73,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		
 		userLocations.add(coordinates);
 		userLocationsObserver.notifyUserLocationAdded(coordinates);
+		deviceVibrator.vibrate(100);
 	}
 	
 	public void searchButtonPressed() {

@@ -4,7 +4,7 @@ import android.text.format.Time;
 
 import org.where2pair.presentation.TimeProvider;
 
-public class AndroidTimeProvider implements TimeProvider {
+class AndroidTimeProvider implements TimeProvider {
 
     @Override
     public SimpleTime getCurrentTime() {

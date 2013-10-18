@@ -1,11 +1,11 @@
-package org.where2pair;
+package org.where2pair.activity;
 
-import android.app.Fragment;
 import android.os.Bundle;
 
 import com.google.inject.Inject;
 
 import org.robobinding.binder.Binder;
+import org.where2pair.R;
 import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesViewTransitioner;
 

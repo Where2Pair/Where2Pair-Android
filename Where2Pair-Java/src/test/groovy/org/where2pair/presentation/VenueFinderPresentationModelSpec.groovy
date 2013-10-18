@@ -162,7 +162,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		userLocations == []
 	}
 	
-	def "when the map is long-pressed a new location is added"() {
+	def "when the map is long-pressed a new location is added and the device vibrates"() {
 		given:
 		def newLocation = new Coordinates(1.0, 0.1)
 		initializePresentationModel()
@@ -173,6 +173,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		then:
 		1 * userLocationsObserver.notifyUserLocationAdded(newLocation)
 		venueFinderPresentationModel.getUserLocations() == [newLocation]
+		1 * deviceVibrator.vibrate(100)
 	}
 	
 	def "when viewing venue search results then long-presses on map do nothing"() {
@@ -187,6 +188,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		then:
 		0 * userLocationsObserver.notifyUserLocationAdded(CURRENT_LOCATION)
 		venueFinderPresentationModel.getUserLocations() == []
+		0 * deviceVibrator.vibrate(_)
 	}
 	
 	def "when venues are updated sets venues and notifies venues observer"() {
@@ -255,7 +257,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def initializePresentationModel() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
-				venueFinder, locationProvider, timeProvider)
+				venueFinder, locationProvider, timeProvider, deviceVibrator)
 		venueFinderPresentationModel.userLocationsObserver = userLocationsObserver
 		venueFinderPresentationModel.venuesObserver = venuesObserver
 		venueFinderPresentationModel.venuesViewTransitioner = venuesViewTransitioner
@@ -266,6 +268,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	VenueFinder venueFinder = Mock()
 	LocationProvider locationProvider = Mock()
 	TimeProvider timeProvider = Mock()
+	DeviceVibrator deviceVibrator = Mock()
 	VenuesViewTransitioner venuesViewTransitioner = Mock()
 	UserLocationsObserver userLocationsObserver = Mock()
 	VenuesObserver venuesObserver = Mock()
