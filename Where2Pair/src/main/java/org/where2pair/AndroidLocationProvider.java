@@ -31,6 +31,7 @@ class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, 
 
     @Override
     public Coordinates getCurrentLocation() {
+        Log.d("*****", "Establishing connection: " + locationClient.isConnecting());
         if (locationClient == null || locationClient.isConnecting()) return null;
 
         Location lastLocation = locationClient.getLastLocation();

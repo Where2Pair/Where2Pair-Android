@@ -24,7 +24,7 @@ import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
 public class VenuesMapFragment extends MapFragment implements UserLocationsObserver, VenuesObserver {
-    private static final LatLng LONDON = new LatLng(51.5072, 0.1275);
+    private static final LatLng LONDON = new LatLng(51.5085, 0.1257);
     @Inject VenueFinderPresentationModel venueFinderPresentationModel;
     private GoogleMap googleMap;
 
@@ -48,7 +48,12 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
                 venueFinderPresentationModel.mapLongPressed(asCoordinates(latLng));
             }
         });
+        resetDisplay();
+    }
 
+
+    public void resetDisplay() {
+        googleMap.clear();
         if (venueFinderPresentationModel.hasMapMarkersToDisplay()) {
             final LatLngBounds.Builder boundsBuilder = ensureCameraBoundsAndAddMarkers();
 

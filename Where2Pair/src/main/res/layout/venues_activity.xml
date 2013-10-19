@@ -55,6 +55,14 @@
                 bind:visibility="{listButtonVisible}"
                 bind:onClick="listButtonPressed" />
 
+            <Button
+                android:text="Reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle"
+                bind:visibility="{resetButtonVisible}"
+                bind:onClick="resetButtonPressed" />
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

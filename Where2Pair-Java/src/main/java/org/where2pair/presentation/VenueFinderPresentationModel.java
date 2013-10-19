@@ -34,6 +34,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private boolean mapButtonVisible;
 	private boolean listButtonVisible;
 	private boolean loadingIconVisible;
+	private boolean resetButtonVisible;
 	private boolean viewingVenueSearchResults;
 
 	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, 
@@ -48,8 +49,12 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private void setDefaults() {
 		venues = newArrayList();
 		userLocations = newArrayList();
-		searchButtonVisible = true;
-		searchOptionsButtonVisible = true;
+		setSearchButtonVisible(true);
+		setSearchOptionsButtonVisible(true);
+		setMapButtonVisible(false);
+		setListButtonVisible(false);
+		setResetButtonVisible(false);
+		viewingVenueSearchResults = false;
 		
 		Coordinates currentLocation = locationProvider.getCurrentLocation();
 		if (currentLocation != null) userLocations.add(currentLocation);
@@ -100,6 +105,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		setSearchOptionsButtonVisible(false);
 		setLoadingIconVisible(false);
 		setListButtonVisible(true);
+		setResetButtonVisible(true);
 		venuesObserver.notifyVenuesUpdated();
 	}
 
@@ -126,6 +132,11 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		setListButtonVisible(false);
 		setMapButtonVisible(true);
 		venuesViewTransitioner.showList();
+	}
+	
+	public void resetButtonPressed() {
+		setDefaults();
+		venuesViewTransitioner.resetDisplay();
 	}
 	
 	public boolean isSearchButtonVisible() {
@@ -160,6 +171,14 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		this.listButtonVisible = listButtonVisible;
 	}
 
+	public boolean isResetButtonVisible() {
+		return resetButtonVisible;
+	}
+
+	public void setResetButtonVisible(boolean resetButtonVisible) {
+		this.resetButtonVisible = resetButtonVisible;
+	}
+	
 	public boolean isLoadingIconVisible() {
 		return loadingIconVisible;
 	}

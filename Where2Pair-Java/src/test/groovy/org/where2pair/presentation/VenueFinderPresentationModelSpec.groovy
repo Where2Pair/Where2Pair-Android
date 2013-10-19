@@ -49,6 +49,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| true
 		'mapButton'				| false
 		'listButton'			| false
+		'resetButton'			| false
 		'loadingIcon'			| false
 	}
 	
@@ -70,6 +71,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| false
 		'listButton'			| false
+		'resetButton'			| false
 		'loadingIcon'			| true
 	}
 	
@@ -91,6 +93,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| false
 		'listButton'			| true
+		'resetButton'			| true
 		'loadingIcon'			| false
 	}
 	
@@ -114,6 +117,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| false
 		'listButton'			| true
+		'resetButton'			| true
 		'loadingIcon'			| false
 	}
 
@@ -136,6 +140,30 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| true
 		'listButton'			| false
+		'resetButton'			| true
+		'loadingIcon'			| false
+	}
+	
+	@Unroll
+	def "when reset button pressed, view: #view should be visible: #visibilityExpectation"() {
+		given:
+		initializePresentationModel()
+		
+		when:
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.notifyVenuesFound([])
+		venueFinderPresentationModel.resetButtonPressed()
+		
+		then:
+		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
+		
+		where:
+		view 					| visibilityExpectation
+		'searchButton' 			| true
+		'searchOptionsButton' 	| true
+		'mapButton'				| false
+		'listButton'			| false
+		'resetButton'			| false
 		'loadingIcon'			| false
 	}
 	
@@ -164,15 +192,14 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when the map is long-pressed a new location is added and the device vibrates"() {
 		given:
-		def newLocation = new Coordinates(1.0, 0.1)
 		initializePresentationModel()
 		
 		when:
-		venueFinderPresentationModel.mapLongPressed(newLocation)
+		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		
 		then:
-		1 * userLocationsObserver.notifyUserLocationAdded(newLocation)
-		venueFinderPresentationModel.getUserLocations() == [newLocation]
+		1 * userLocationsObserver.notifyUserLocationAdded(NEW_LOCATION)
+		venueFinderPresentationModel.getUserLocations() == [NEW_LOCATION]
 		1 * deviceVibrator.vibrate(100)
 	}
 	
@@ -255,6 +282,24 @@ class VenueFinderPresentationModelSpec extends Specification {
 		1 * venuesViewTransitioner.showList()
 	}
 	
+	def "when pressing reset button all user supplied locations and venues are cleared"() {
+		given:
+		locationProvider.getCurrentLocation() >> CURRENT_LOCATION
+		initializePresentationModel()
+		
+		when:
+		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.notifyVenuesFound(sampleVenues())
+		venueFinderPresentationModel.resetButtonPressed()
+		
+		then:
+		venueFinderPresentationModel.venues == []
+		venueFinderPresentationModel.userLocations == [CURRENT_LOCATION]
+		!venueFinderPresentationModel.viewingVenueSearchResults
+		1 * venuesViewTransitioner.resetDisplay()
+	}
+	
 	def initializePresentationModel() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
 				venueFinder, locationProvider, timeProvider, deviceVibrator)
@@ -263,8 +308,9 @@ class VenueFinderPresentationModelSpec extends Specification {
 		venueFinderPresentationModel.venuesViewTransitioner = venuesViewTransitioner
 	}
 	
-	static final SimpleTime CURRENT_TIME = new SimpleTime(12, 30);
-	static final Coordinates CURRENT_LOCATION = new Coordinates(1.0, 0.1);
+	static final CURRENT_TIME = new SimpleTime(12, 30);
+	static final CURRENT_LOCATION = new Coordinates(1.0, 0.1);
+	static final NEW_LOCATION = new Coordinates(2.0, 0.2)
 	VenueFinder venueFinder = Mock()
 	LocationProvider locationProvider = Mock()
 	TimeProvider timeProvider = Mock()

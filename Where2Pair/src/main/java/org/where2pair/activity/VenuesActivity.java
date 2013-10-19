@@ -15,6 +15,7 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
 
     private VenuesMapFragment venuesMapFragment = new VenuesMapFragment();
     private VenuesListFragment venuesListFragment = new VenuesListFragment();
+    private boolean mapShowing;
     @Inject VenueFinderPresentationModel venueFinderPresentationModel;
 
     @Override
@@ -30,6 +31,7 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
                     .add(R.id.venues_container, venuesMapFragment)
                     .commit();
         }
+        mapShowing = true;
     }
 
     @Override
@@ -37,6 +39,7 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
         getFragmentManager().beginTransaction()
                 .replace(R.id.venues_container, venuesMapFragment)
                 .commit();
+        mapShowing = true;
     }
 
     @Override
@@ -44,5 +47,13 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
         getFragmentManager().beginTransaction()
                 .replace(R.id.venues_container, venuesListFragment)
                 .commit();
+        mapShowing = false;
+    }
+
+    @Override
+    public void resetDisplay() {
+        if (!mapShowing) showMap();
+
+        venuesMapFragment.resetDisplay();
     }
 }

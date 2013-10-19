@@ -6,4 +6,5 @@ public interface VenuesViewTransitioner {
 	
 	void showMap();
 	
+	void resetDisplay();
 }

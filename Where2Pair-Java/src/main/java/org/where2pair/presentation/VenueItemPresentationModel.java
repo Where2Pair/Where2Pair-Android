@@ -25,5 +25,4 @@ public class VenueItemPresentationModel implements ItemPresentationModel<VenueWi
 	public void updateData(int index, VenueWithDistance venueWithDistance) {
 		this.venueWithDistance = venueWithDistance;
 	}
-
 }
