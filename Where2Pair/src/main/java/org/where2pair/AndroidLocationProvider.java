@@ -9,10 +9,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 
+import org.where2pair.presentation.CurrentLocationObserver;
 import org.where2pair.presentation.LocationProvider;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, OnConnectionFailedListener {
 
@@ -29,21 +34,30 @@ class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, 
         }
     }
 
-    @Override
-    public Coordinates getCurrentLocation() {
-        Log.d("*****", "Establishing connection: " + locationClient.isConnecting());
-        if (locationClient == null || locationClient.isConnecting()) return null;
+    public void requestCurrentLocation(final CurrentLocationObserver locationObserver) {
+        ExecutorService executorService = newSingleThreadExecutor();
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (locationClient == null) return;
 
-        Location lastLocation = locationClient.getLastLocation();
+                while (locationClient.isConnecting()) {
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException e) {}
+                }
 
-        if (lastLocation == null) return null;
+                Location lastLocation = locationClient.getLastLocation();
 
-        return new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude());
+                if (lastLocation == null) return;
+
+                locationObserver.notifyCurrentLocation(new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude()));
+            }
+        });
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-
     }
 
     @Override

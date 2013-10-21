@@ -21,7 +21,6 @@ import org.where2pair.presentation.VenuesObserver;
 import roboguice.RoboGuice;
 
 import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds;
-import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
 public class VenuesMapFragment extends MapFragment implements UserLocationsObserver, VenuesObserver {
@@ -101,6 +100,12 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
     @Override
     public void notifyUserLocationAdded(Coordinates location) {
         addUserLocationMarker(location);
+    }
+
+    @Override
+    public void notifyUserLocationAddedAndZoomCamera(Coordinates location) {
+        addUserLocationMarker(location);
+        animateCameraToViewportBounds();
     }
 
     @Override

@@ -21,7 +21,7 @@ import org.where2pair.VenuesResultActionHandler;
 import com.google.common.collect.ImmutableList;
 
 @PresentationModel
-public class VenueFinderPresentationModel implements VenuesResultActionHandler {
+public class VenueFinderPresentationModel implements VenuesResultActionHandler, CurrentLocationObserver {
 
 	static final Coordinates LONDON = new Coordinates(51.5085, 0.1257);
 	private VenueFinder venueFinder;
@@ -33,6 +33,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private VenuesObserver venuesObserver;
 	private List<VenueWithDistances> venues;
 	private List<Coordinates> userLocations;
+	private Coordinates currentLocation;
 	private boolean searchButtonVisible;
 	private boolean searchOptionsButtonVisible;
 	private boolean mapButtonVisible;
@@ -60,8 +61,8 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		setResetButtonVisible(false);
 		viewingVenueSearchResults = false;
 		
-		Coordinates currentLocation = locationProvider.getCurrentLocation();
-		if (currentLocation != null) userLocations.add(currentLocation);
+		if (currentLocation == null) locationProvider.requestCurrentLocation(this);
+		else userLocations.add(currentLocation);
 	}
 	
 	@ItemPresentationModel(VenueItemPresentationModel.class)
@@ -117,6 +118,15 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	public void notifyVenuesFindingFailed(String reason) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void notifyCurrentLocation(Coordinates coordinates) {
+		currentLocation = coordinates;
+		if (!userLocations.isEmpty()) return;
+		
+		userLocations.add(coordinates);
+		userLocationsObserver.notifyUserLocationAddedAndZoomCamera(coordinates);
 	}
 	
 	public MapViewportState getMapViewPortState() {
@@ -212,5 +222,4 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	public void setVenuesObserver(VenuesObserver venuesObserver) {
 		this.venuesObserver = venuesObserver;
 	}
-
 }
