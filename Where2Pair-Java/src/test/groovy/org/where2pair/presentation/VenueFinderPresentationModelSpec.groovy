@@ -18,24 +18,6 @@ import spock.lang.Unroll
 
 class VenueFinderPresentationModelSpec extends Specification {
 
-	def "when there are no user locations or venues to display, then there are no markers to render on the map"() {
-		given:
-		initializePresentationModel()
-		
-		when:
-		if (hasUserLocations) venueFinderPresentationModel.mapLongPressed(CURRENT_LOCATION)
-		if (hasVenues) venueFinderPresentationModel.venues = sampleVenuesWithDistances()
-		
-		then:
-		venueFinderPresentationModel.hasMapMarkersToDisplay() == expectsHasMapMarkersToDisplay
-		
-		where:
-		hasUserLocations 	| hasVenues | expectsHasMapMarkersToDisplay
-		false				| false		| false
-		false				| true 		| true
-		true				| false		| true
-	}
-	
 	def "when there are no user locations or venues to display, then map should focus on London with wide zoom"() {
 		given:
 		initializePresentationModel()

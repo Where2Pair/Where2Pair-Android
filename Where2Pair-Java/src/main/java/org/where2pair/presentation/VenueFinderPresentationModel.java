@@ -119,10 +119,6 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 		
 	}
 	
-	public boolean hasMapMarkersToDisplay() {
-		return !venues.isEmpty() || !userLocations.isEmpty();
-	}
-	
 	public MapViewportState getMapViewPortState() {
 		List<Coordinates> coordinatesBounds = newArrayList(userLocations);
 		if (coordinatesBounds.isEmpty()) coordinatesBounds.add(LONDON);

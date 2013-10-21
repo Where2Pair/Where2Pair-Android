@@ -12,7 +12,8 @@ import com.google.inject.Inject;
 
 import org.where2pair.Coordinates;
 import org.where2pair.Venue;
-import org.where2pair.VenueWithDistance;
+import org.where2pair.VenueWithDistances;
+import org.where2pair.presentation.MapViewportState;
 import org.where2pair.presentation.UserLocationsObserver;
 import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesObserver;
@@ -24,7 +25,6 @@ import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
 public class VenuesMapFragment extends MapFragment implements UserLocationsObserver, VenuesObserver {
-    private static final LatLng LONDON = new LatLng(51.5085, 0.1257);
     @Inject VenueFinderPresentationModel venueFinderPresentationModel;
     private GoogleMap googleMap;
 
@@ -54,24 +54,22 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
 
     public void resetDisplay() {
         googleMap.clear();
-        if (venueFinderPresentationModel.hasMapMarkersToDisplay()) {
-            final LatLngBounds.Builder boundsBuilder = ensureCameraBoundsAndAddMarkers();
+        addUserLocationMarkers();
+        addVenueMarkers();
 
-            googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                @Override
-                public void onCameraChange(CameraPosition cameraPosition) {
-                    googleMap.animateCamera(newLatLngBounds(boundsBuilder.build(), 25));
-                    googleMap.setOnCameraChangeListener(null);
-                }
-            });
-        } else {
-            googleMap.animateCamera(newLatLngZoom(LONDON, 10));
-        }
+        googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                animateCameraToViewportBounds();
+                googleMap.setOnCameraChangeListener(null);
+            }
+        });
     }
 
-    @Override
-    public void notifyUserLocationAdded(Coordinates location) {
-        addUserLocationMarker(location);
+    private void addUserLocationMarkers() {
+        for (Coordinates userLocation : venueFinderPresentationModel.getUserLocations()) {
+            addUserLocationMarker(userLocation);
+        }
     }
 
     private void addUserLocationMarker(Coordinates location) {
@@ -80,37 +78,35 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
                 .icon(defaultMarker(220)));
     }
 
-    @Override
-    public void notifyVenuesUpdated() {
-        googleMap.clear();
-        LatLngBounds.Builder boundsBuilder = ensureCameraBoundsAndAddMarkers();
-        googleMap.animateCamera(newLatLngBounds(boundsBuilder.build(), 25));
-    }
-
-    private LatLngBounds.Builder ensureCameraBoundsAndAddMarkers() {
-        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-        ensureCameraBoundsAndAddMarkersForUserLocations(boundsBuilder);
-        ensureCameraBoundsAndAddMarkersForVenues(boundsBuilder);
-        return boundsBuilder;
-    }
-
-    private void ensureCameraBoundsAndAddMarkersForUserLocations(LatLngBounds.Builder boundsBuilder) {
-        for (Coordinates userLocation : venueFinderPresentationModel.getUserLocations()) {
-            addUserLocationMarker(userLocation);
-            boundsBuilder.include(asLatLng(userLocation));
-        }
-    }
-
-    private void ensureCameraBoundsAndAddMarkersForVenues(LatLngBounds.Builder boundsBuilder) {
-        for (VenueWithDistance venueWithDistance : venueFinderPresentationModel.getVenues()) {
-            Venue venue = venueWithDistance.venue;
+    private void addVenueMarkers() {
+        for (VenueWithDistances venueWithDistances : venueFinderPresentationModel.getVenues()) {
+            Venue venue = venueWithDistances.venue;
             LatLng latLng = asLatLng(venue.getLocation());
             googleMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(venue.getName())
-                    .snippet(venue.getAddress().addressLine1 + "\n" + String.format("%.2f", venueWithDistance.distance.get("location")) + "km"));
-            boundsBuilder.include(latLng);
+                    .snippet(venue.getAddress().addressLine1 + "\n" + String.format("%.2f", venueWithDistances.averageDistance.distance + "km")));
         }
+    }
+
+    private void animateCameraToViewportBounds() {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        MapViewportState viewportState = venueFinderPresentationModel.getMapViewPortState();
+        for (Coordinates c : viewportState.coordinateBounds) {
+            boundsBuilder.include(asLatLng(c));
+        }
+        googleMap.animateCamera(newLatLngBounds(boundsBuilder.build(), 25));
+    }
+
+    @Override
+    public void notifyUserLocationAdded(Coordinates location) {
+        addUserLocationMarker(location);
+    }
+
+    @Override
+    public void notifyVenuesUpdated() {
+        addVenueMarkers();
+        animateCameraToViewportBounds();
     }
 
     private LatLng asLatLng(Coordinates location) {
