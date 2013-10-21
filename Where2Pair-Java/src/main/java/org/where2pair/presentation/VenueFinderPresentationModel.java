@@ -1,7 +1,10 @@
 package org.where2pair.presentation;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.partition;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
+import static org.where2pair.presentation.MapZoomType.CLOSE;
+import static org.where2pair.presentation.MapZoomType.WIDE;
 
 import java.util.List;
 
@@ -11,7 +14,7 @@ import org.where2pair.Coordinates;
 import org.where2pair.SearchRequest;
 import org.where2pair.SimpleTime;
 import org.where2pair.VenueFinder;
-import org.where2pair.VenueWithDistance;
+import org.where2pair.VenueWithDistances;
 import org.where2pair.VenuesResultAction;
 import org.where2pair.VenuesResultActionHandler;
 
@@ -20,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 @PresentationModel
 public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 
+	static final Coordinates LONDON = new Coordinates(51.5085, 0.1257);
 	private VenueFinder venueFinder;
 	private LocationProvider locationProvider;
 	private TimeProvider timeProvider;
@@ -27,7 +31,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	private VenuesViewTransitioner venuesViewTransitioner;
 	private UserLocationsObserver userLocationsObserver;
 	private VenuesObserver venuesObserver;
-	private List<VenueWithDistance> venues;
+	private List<VenueWithDistances> venues;
 	private List<Coordinates> userLocations;
 	private boolean searchButtonVisible;
 	private boolean searchOptionsButtonVisible;
@@ -61,11 +65,11 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	}
 	
 	@ItemPresentationModel(VenueItemPresentationModel.class)
-	public List<VenueWithDistance> getVenues() {
+	public List<VenueWithDistances> getVenues() {
 		return ImmutableList.copyOf(venues);
 	}
 
-	public void setVenues(List<VenueWithDistance> venues) {
+	public void setVenues(List<VenueWithDistances> venues) {
 		this.venues = newArrayList(venues);
 	}
 
@@ -98,7 +102,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	}
 	
 	@Override
-	public void notifyVenuesFound(List<VenueWithDistance> venues) {
+	public void notifyVenuesFound(List<VenueWithDistances> venues) {
 		viewingVenueSearchResults = true;
 		setVenues(venues);
 		setSearchButtonVisible(false);
@@ -117,6 +121,20 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler {
 	
 	public boolean hasMapMarkersToDisplay() {
 		return !venues.isEmpty() || !userLocations.isEmpty();
+	}
+	
+	public MapViewportState getMapViewPortState() {
+		List<Coordinates> coordinatesBounds = newArrayList(userLocations);
+		if (coordinatesBounds.isEmpty()) coordinatesBounds.add(LONDON);
+		MapZoomType mapZoomType = WIDE;
+		if (!venues.isEmpty()) {
+			List<VenueWithDistances> closestVenues = partition(venues, 5).get(0);
+			for (VenueWithDistances venueWithDistances : closestVenues) {
+				coordinatesBounds.add(venueWithDistances.venue.getLocation());
+			}
+			mapZoomType = CLOSE;
+		}
+		return new MapViewportState(mapZoomType, coordinatesBounds);
 	}
 	
 	public void mapButtonPressed() {

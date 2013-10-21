@@ -2,6 +2,8 @@ package org.where2pair.rest;
 
 import org.where2pair.DailyOpeningTimes;
 import org.where2pair.DayOfWeek;
+import org.where2pair.DistanceUnit;
+import org.where2pair.VenueWithDistances;
 import org.where2pair.WeeklyOpeningTimes;
 
 import retrofit.RestAdapter;
@@ -24,9 +26,11 @@ public class RetrofitVenueServiceAdapterFactory {
 	
 	RestAdapter.Builder createRestAdapterBuilder() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(VenueWithDistances.class, new VenueWithDistancesDeserializer());
 		gsonBuilder.registerTypeAdapter(WeeklyOpeningTimes.class, new WeeklyOpeningTimesDeserializer());
 		gsonBuilder.registerTypeAdapter(DailyOpeningTimes.class, new DailyOpeningTimesDeserializer());
 		gsonBuilder.registerTypeAdapter(DayOfWeek.class, new DayOfWeekDeserializer());
+		gsonBuilder.registerTypeAdapter(DistanceUnit.class, new DistanceUnitSerializer());
 		
 		return new RestAdapter.Builder()
 			.setConverter(new GsonConverter(gsonBuilder.create()))

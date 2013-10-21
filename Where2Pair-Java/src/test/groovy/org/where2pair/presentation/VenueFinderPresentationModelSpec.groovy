@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat
 import static org.mockito.BDDMockito.given
 import static org.where2pair.SearchRequestBuilder.aSearchRequest
 import static org.where2pair.SearchRequestMatcher.equalTo
+import static org.where2pair.TestUtils.sampleVenuesWithDistances
 import static org.where2pair.TestUtils.sampleVenues
 import static spock.util.matcher.HamcrestSupport.that
 
@@ -23,7 +24,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		
 		when:
 		if (hasUserLocations) venueFinderPresentationModel.mapLongPressed(CURRENT_LOCATION)
-		if (hasVenues) venueFinderPresentationModel.setVenues(sampleVenues())
+		if (hasVenues) venueFinderPresentationModel.venues = sampleVenuesWithDistances()
 		
 		then:
 		venueFinderPresentationModel.hasMapMarkersToDisplay() == expectsHasMapMarkersToDisplay
@@ -33,6 +34,45 @@ class VenueFinderPresentationModelSpec extends Specification {
 		false				| false		| false
 		false				| true 		| true
 		true				| false		| true
+	}
+	
+	def "when there are no user locations or venues to display, then map should focus on London with wide zoom"() {
+		given:
+		initializePresentationModel()
+		
+		when:
+		MapViewportState mapViewPortState = venueFinderPresentationModel.getMapViewPortState()
+		
+		then:
+		mapViewPortState.zoom == MapZoomType.WIDE
+		mapViewPortState.coordinateBounds == [VenueFinderPresentationModel.LONDON]
+	}
+	
+	def "when there are user locations but no venues to display, then map should focus on user locations with wide zoom"() {
+		given:
+		locationProvider.getCurrentLocation() >> CURRENT_LOCATION
+		initializePresentationModel()
+		
+		when:
+		MapViewportState mapViewPortState = venueFinderPresentationModel.getMapViewPortState()
+		
+		then:
+		mapViewPortState.zoom == MapZoomType.WIDE
+		mapViewPortState.coordinateBounds == [CURRENT_LOCATION]
+	}
+	
+	def "when there are user locations and venues to display, then map should focus on user locations and nearest 5 venues with close zoom"() {
+		given:
+		locationProvider.getCurrentLocation() >> CURRENT_LOCATION
+		initializePresentationModel()
+		venueFinderPresentationModel.venues = sampleVenuesWithDistances()
+		
+		when:
+		MapViewportState mapViewPortState = venueFinderPresentationModel.getMapViewPortState()
+		
+		then:
+		mapViewPortState.zoom == MapZoomType.CLOSE
+		mapViewPortState.coordinateBounds == [CURRENT_LOCATION] + sampleVenuesWithDistances()[0..4].collect{ it.venue.location }
 	}
 	
 	@Unroll
@@ -220,7 +260,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when venues are updated sets venues and notifies venues observer"() {
 		given:
-		def venues = sampleVenues()
+		def venues = sampleVenuesWithDistances()
 		initializePresentationModel()
 		
 		when:

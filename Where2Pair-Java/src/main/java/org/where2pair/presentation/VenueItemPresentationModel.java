@@ -2,12 +2,12 @@ package org.where2pair.presentation;
 
 import org.robobinding.itempresentationmodel.ItemPresentationModel;
 import org.robobinding.presentationmodel.PresentationModel;
-import org.where2pair.VenueWithDistance;
+import org.where2pair.VenueWithDistances;
 
 @PresentationModel
-public class VenueItemPresentationModel implements ItemPresentationModel<VenueWithDistance> {
+public class VenueItemPresentationModel implements ItemPresentationModel<VenueWithDistances> {
 
-	private VenueWithDistance venueWithDistance;
+	private VenueWithDistances venueWithDistance;
 
 	public String getName() {
 		return venueWithDistance.venue.getName();
@@ -18,11 +18,11 @@ public class VenueItemPresentationModel implements ItemPresentationModel<VenueWi
 	}
 	
 	public String getDistance() {
-		return String.format("%.2f", venueWithDistance.distance.get("location")) + "km";
+		return String.format("%.2f", venueWithDistance.distances.get("location")) + "km";
 	}
 	
 	@Override
-	public void updateData(int index, VenueWithDistance venueWithDistance) {
+	public void updateData(int index, VenueWithDistances venueWithDistance) {
 		this.venueWithDistance = venueWithDistance;
 	}
 }

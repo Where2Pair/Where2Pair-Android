@@ -2,31 +2,50 @@ package org.where2pair;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static org.where2pair.DistanceUnit.KM;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class TestUtils {
 
-	public static List<VenueWithDistance> sampleVenuesWithDistance() {
-		List<VenueWithDistance> venuesWithDistance = newArrayList();
+	public static List<VenueWithDistances> sampleVenuesWithDistances() {
+		List<VenueWithDistances> venuesWithDistance = newArrayList();
 		List<Venue> venues = sampleVenues();
-		double distance = 3;
+		double distance = 1;
 		for (Venue venue : venues) {
-			venuesWithDistance.add(new VenueWithDistance(ImmutableMap.of("location", distance++), venue));
+			venuesWithDistance.add(sampleVenueWithDistances(distance++, venue));
 		}
 		return venuesWithDistance;
 	}
 	
+	public static VenueWithDistances sampleVenueWithDistances(double averageDistance) {
+		return sampleVenueWithDistances(averageDistance, sampleVenue());
+	}
+	
+	private static VenueWithDistances sampleVenueWithDistances(double averageDistance, Venue venue) {
+		Map<Coordinates, Distance> distances = newHashMap();
+		for (int i = 0; i < 3; i++) {
+			distances.put(new Coordinates(1.0 + i, 0.1 + i), new Distance(averageDistance, KM));
+		}
+		return new VenueWithDistances(distances, new Distance(averageDistance, KM), venue);
+	}
+	
 	public static List<Venue> sampleVenues() {
-		Venue venue1 = new Venue(99L, "name", new Coordinates(1.0, 0.1), new Address("addressLine1", "addressLine2", "addressLine3", "city", "postcode", "phoneNumber"), 
-				newArrayList("Wifi", "Seating"), sampleWeeklyOpeningTimes());
-		Venue venue2 = new Venue(199L, "2name", new Coordinates(1.0, 0.1), new Address("2addressLine1", "2addressLine2", "2addressLine3", "2city", "2postcode", "2phoneNumber"), 
-				newArrayList("2Wifi", "2Seating"), anotherSampleWeeklyOpeningTimes());
-		return newArrayList(venue1, venue2);
+		List<Venue> venues = newArrayList();
+		for (int i = 0; i < 10; i++) venues.add(sampleVenue(i));
+		return venues;
+	}
+	
+	public static Venue sampleVenue() {
+		return sampleVenue(0);
+	}
+	
+	private static Venue sampleVenue(int differentiator) {
+		return new Venue(99L + differentiator, differentiator + "name", new Coordinates(1.0, 0.1), new Address(differentiator + "addressLine1", differentiator + "addressLine2", differentiator + "addressLine3", differentiator + "city", differentiator + "postcode", differentiator + "phoneNumber"), 
+				newArrayList(differentiator + "Wifi", differentiator + "Seating"), differentiator % 2 == 0 ? sampleWeeklyOpeningTimes() : anotherSampleWeeklyOpeningTimes());
 	}
 	
 	public static WeeklyOpeningTimes sampleWeeklyOpeningTimes() {

@@ -13,6 +13,7 @@ import static org.where2pair.DayOfWeek.SUNDAY;
 import static org.where2pair.DayOfWeek.THURSDAY;
 import static org.where2pair.DayOfWeek.TUESDAY;
 import static org.where2pair.DayOfWeek.WEDNESDAY;
+import static org.where2pair.DistanceUnit.KM;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,9 +24,10 @@ import org.where2pair.Address;
 import org.where2pair.Coordinates;
 import org.where2pair.DailyOpeningTimes;
 import org.where2pair.DayOfWeek;
+import org.where2pair.Distance;
 import org.where2pair.OpenPeriod;
 import org.where2pair.Venue;
-import org.where2pair.VenueWithDistance;
+import org.where2pair.VenueWithDistances;
 import org.where2pair.WeeklyOpeningTimes;
 
 import retrofit.Callback;
@@ -48,6 +50,8 @@ public class RequestVenuesIntegrationTest {
 	public void requestsAndParsesResponse() throws InterruptedException {
 		VenuesCallbackForTest venuesCallback = new VenuesCallbackForTest();
 		RetrofitVenueService retrofitVenueService = retrofitVenueServiceForTest();
+		
+		System.out.println(TestData.VENUES_JSON);
 		
 		retrofitVenueService.requestVenues("1.0,0.1", "12.30", "WIFI,SEATING", venuesCallback);
 		
@@ -77,12 +81,12 @@ public class RequestVenuesIntegrationTest {
 		}
 	}
 	
-	static class VenuesCallbackForTest implements Callback<List<VenueWithDistance>> {
-		List<VenueWithDistance> venues;
+	static class VenuesCallbackForTest implements Callback<List<VenueWithDistances>> {
+		List<VenueWithDistances> venues;
 		boolean positiveResponseReceived = false;
 		
 		@Override
-		public void success(List<VenueWithDistance> venues, Response response) {
+		public void success(List<VenueWithDistances> venues, Response response) {
 			this.venues = venues;
 			positiveResponseReceived = true;
 		}
@@ -95,8 +99,9 @@ public class RequestVenuesIntegrationTest {
 	
 	static class TestData {
 		@SuppressWarnings("serial")
-		static final List<VenueWithDistance> VENUES = newArrayList(
-				new VenueWithDistance(ImmutableMap.of("location", 0.34362823973381357),
+		static final List<VenueWithDistances> VENUES = newArrayList(
+				new VenueWithDistances(ImmutableMap.of(new Coordinates(1.0, 0.1), new Distance(0.34362823973381357, KM)),
+						new Distance(0.34362823973381357, KM),
 						new Venue(40L, "Starbucks", new Coordinates(51.5139, -0.11017), new Address("30-32 Fleet Street", "Eldon Chambers", "Unit 2 Eldon Chambers", "London", "EC4Y 1AA", "02075834163"),
 								newArrayList("Mobile payments", "Wifi"), new WeeklyOpeningTimes(new HashMap<DayOfWeek, DailyOpeningTimes>(){
 									{
@@ -109,7 +114,8 @@ public class RequestVenuesIntegrationTest {
 										put(SUNDAY, new DailyOpeningTimes(newArrayList(new OpenPeriod(8, 30, 18, 30))));
 									}
 								}))), 
-				new VenueWithDistance(ImmutableMap.of("location", 1.783973264721356),
+				new VenueWithDistances(ImmutableMap.of(new Coordinates(1.0, 0.1), new Distance(1.783973264721356, KM)),
+						new Distance(1.783973264721356, KM),
 						new Venue(22L, "Starbucks", new Coordinates(51.51499, -0.09932), new Address("1 Paternoster House", "Unit 7", "", "London", "EC4M 7DX", "02072363014"),
 								newArrayList("Wifi"), new WeeklyOpeningTimes(new HashMap<DayOfWeek, DailyOpeningTimes>(){
 									{
@@ -124,14 +130,16 @@ public class RequestVenuesIntegrationTest {
 								}))));
 		
 		
-		static final String VENUES_JSON = "[{\"distance\":{\"location\":0.34362823973381357},\"venue\":{\"id\":40,\"name\":\"Starbucks\",\"location\":{\"latitude\":51.5139,\"longitude\":-0.11017},"
+		static final String VENUES_JSON = "[{\"distances\":[{\"location\":{\"latitude\":1.0,\"longitude\":0.1},\"distance\":{\"distance\":0.34362823973381357,\"unit\":\"km\"}}],"
+				+ "\"averageDistance\":{\"distance\":0.34362823973381357,\"unit\":\"km\"},\"venue\":{\"id\":40,\"name\":\"Starbucks\",\"location\":{\"latitude\":51.5139,\"longitude\":-0.11017},"
 				+ "\"address\":{\"addressLine1\":\"30-32 Fleet Street\",\"addressLine2\":\"Eldon Chambers\",\"addressLine3\":\"Unit 2 Eldon Chambers\","
 				+ "\"city\":\"London\",\"postcode\":\"EC4Y 1AA\",\"phoneNumber\":\"02075834163\"},\"openHours\":{\"monday\":[{\"openHour\":6,\"openMinute\":0,"
 				+ "\"closeHour\":19,\"closeMinute\":30}],\"tuesday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,\"closeMinute\":30}],\"wednesday\":"
 				+ "[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,\"closeMinute\":30}],\"thursday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,"
 				+ "\"closeMinute\":30}],\"friday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":19,\"closeMinute\":30}],\"saturday\":[{\"openHour\":8,"
 				+ "\"openMinute\":0,\"closeHour\":18,\"closeMinute\":0}],\"sunday\":[{\"openHour\":8,\"openMinute\":30,\"closeHour\":18,\"closeMinute\":30}]},"
-				+ "\"features\":[\"Mobile payments\",\"Wifi\"]}},{\"distance\":{\"location\":1.783973264721356},\"venue\":{\"id\":22,\"name\":\"Starbucks\",\"location\":{\"latitude\":51.51499,\"longitude\":-0.09932},"
+				+ "\"features\":[\"Mobile payments\",\"Wifi\"]}},{\"distances\":[{\"location\":{\"latitude\":1.0,\"longitude\":0.1},\"distance\":{\"distance\":1.783973264721356,\"unit\":\"km\"}}],"
+				+ "\"averageDistance\":{\"distance\":1.783973264721356,\"unit\":\"km\"},\"venue\":{\"id\":22,\"name\":\"Starbucks\",\"location\":{\"latitude\":51.51499,\"longitude\":-0.09932},"
 				+ "\"address\":{\"addressLine1\":\"1 Paternoster House\",\"addressLine2\":\"Unit 7\",\"addressLine3\":\"\",\"city\":\"London\","
 				+ "\"postcode\":\"EC4M 7DX\",\"phoneNumber\":\"02072363014\"},\"openHours\":{\"monday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":20,"
 				+ "\"closeMinute\":0}],\"tuesday\":[{\"openHour\":6,\"openMinute\":0,\"closeHour\":20,\"closeMinute\":0}],\"wednesday\":[{\"openHour\":6,"
