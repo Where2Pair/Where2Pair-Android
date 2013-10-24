@@ -2,11 +2,11 @@ package org.where2pair;
 
 public class Distance {
 
-	public final double distance;
+	public final double value;
 	public final DistanceUnit unit;
 
-	public Distance(double distance, DistanceUnit unit) {
-		this.distance = distance;
+	public Distance(double value, DistanceUnit unit) {
+		this.value = value;
 		this.unit = unit;
 	}
 
@@ -15,7 +15,7 @@ public class Distance {
 		final int prime = 31;
 		int result = 1;
 		long temp;
-		temp = Double.doubleToLongBits(distance);
+		temp = Double.doubleToLongBits(value);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((unit == null) ? 0 : unit.hashCode());
 		return result;
@@ -30,8 +30,8 @@ public class Distance {
 		if (getClass() != obj.getClass())
 			return false;
 		Distance other = (Distance) obj;
-		if (Double.doubleToLongBits(distance) != Double
-				.doubleToLongBits(other.distance))
+		if (Double.doubleToLongBits(value) != Double
+				.doubleToLongBits(other.value))
 			return false;
 		if (unit != other.unit)
 			return false;

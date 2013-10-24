@@ -48,13 +48,6 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
             }
         });
         resetDisplay();
-    }
-
-
-    public void resetDisplay() {
-        googleMap.clear();
-        addUserLocationMarkers();
-        addVenueMarkers();
 
         googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
@@ -63,6 +56,13 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
                 googleMap.setOnCameraChangeListener(null);
             }
         });
+    }
+
+
+    public void resetDisplay() {
+        googleMap.clear();
+        addUserLocationMarkers();
+        addVenueMarkers();
     }
 
     private void addUserLocationMarkers() {
@@ -84,7 +84,7 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
             googleMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(venue.getName())
-                    .snippet(venue.getAddress().addressLine1 + "\n" + String.format("%.2f", venueWithDistances.averageDistance.distance + "km")));
+                    .snippet(venue.getAddress().addressLine1 + "\n" + String.format("%.2f", venueWithDistances.averageDistance.value) + "km"));
         }
     }
 

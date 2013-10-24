@@ -27,7 +27,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		
 		then:
 		venueFinderPresentationModel.getUserLocations() == [CURRENT_LOCATION]
-		1 * userLocationsObserver.notifyUserLocationAdded(CURRENT_LOCATION)
+		1 * userLocationsObserver.notifyUserLocationAddedAndZoomCamera(CURRENT_LOCATION)
 	}
 	
 	def "given user locations have already been manually added, ignore current location notification"() {

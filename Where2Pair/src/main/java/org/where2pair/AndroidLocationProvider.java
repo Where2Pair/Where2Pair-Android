@@ -3,6 +3,7 @@ package org.where2pair;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -35,6 +36,7 @@ class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, 
     }
 
     public void requestCurrentLocation(final CurrentLocationObserver locationObserver) {
+        final Handler handler = new Handler();
         ExecutorService executorService = newSingleThreadExecutor();
         executorService.submit(new Runnable() {
             @Override
@@ -47,11 +49,16 @@ class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, 
                     } catch (InterruptedException e) {}
                 }
 
-                Location lastLocation = locationClient.getLastLocation();
+                final Location lastLocation = locationClient.getLastLocation();
 
                 if (lastLocation == null) return;
 
-                locationObserver.notifyCurrentLocation(new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        locationObserver.notifyCurrentLocation(new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                    }
+                });
             }
         });
     }
