@@ -28,3 +28,4 @@ classes/*
 /build-eclipse
 **/bin/*
 maps.key
+local.properties
