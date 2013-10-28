@@ -1,6 +1,7 @@
 package org.where2pair.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.inject.Inject;
 
@@ -13,8 +14,8 @@ import roboguice.activity.RoboFragmentActivity;
 
 public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTransitioner {
 
-    private VenuesMapFragment venuesMapFragment = new VenuesMapFragment();
-    private VenuesListFragment venuesListFragment = new VenuesListFragment();
+    private static final String MAP = "map";
+    private static final String LIST = "list";
     private boolean mapShowing;
     @Inject VenueFinderPresentationModel venueFinderPresentationModel;
 
@@ -28,7 +29,7 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
         if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.venues_container, venuesMapFragment)
+                    .add(R.id.venues_container, new VenuesMapFragment(), MAP)
                     .commit();
         }
         mapShowing = true;
@@ -37,7 +38,7 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
     @Override
     public void showMap() {
         getFragmentManager().beginTransaction()
-                .replace(R.id.venues_container, venuesMapFragment)
+                .replace(R.id.venues_container, new VenuesMapFragment(), MAP)
                 .commit();
         mapShowing = true;
     }
@@ -45,7 +46,7 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
     @Override
     public void showList() {
         getFragmentManager().beginTransaction()
-                .replace(R.id.venues_container, venuesListFragment)
+                .replace(R.id.venues_container, new VenuesListFragment(), LIST)
                 .commit();
         mapShowing = false;
     }
@@ -54,6 +55,6 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
     public void resetDisplay() {
         if (!mapShowing) showMap();
 
-        venuesMapFragment.resetDisplay();
+        ((VenuesMapFragment)getFragmentManager().findFragmentByTag(MAP)).resetDisplay();
     }
 }

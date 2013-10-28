@@ -56,7 +56,7 @@ class AndroidLocationProvider implements LocationProvider, ConnectionCallbacks, 
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        locationObserver.notifyCurrentLocation(new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude()));
+                        locationObserver.notifyCurrentLocationEstablished(new Coordinates(lastLocation.getLatitude(), lastLocation.getLongitude()));
                     }
                 });
             }

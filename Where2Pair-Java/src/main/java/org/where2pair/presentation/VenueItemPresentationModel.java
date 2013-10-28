@@ -7,22 +7,22 @@ import org.where2pair.VenueWithDistances;
 @PresentationModel
 public class VenueItemPresentationModel implements ItemPresentationModel<VenueWithDistances> {
 
-	private VenueWithDistances venueWithDistance;
+	private VenueWithDistances venueWithDistances;
 
 	public String getName() {
-		return venueWithDistance.venue.getName();
+		return venueWithDistances.venue.getName();
 	}
 	
 	public String getAddress() {
-		return venueWithDistance.venue.getAddress().addressLine1;
+		return venueWithDistances.venue.getAddress().addressLine1;
 	}
 	
 	public String getDistance() {
-		return String.format("%.2f", venueWithDistance.distances.get("location")) + "km";
+		return venueWithDistances.averageDistance.toHumanReadableString();
 	}
 	
 	@Override
-	public void updateData(int index, VenueWithDistances venueWithDistance) {
-		this.venueWithDistance = venueWithDistance;
+	public void updateData(int index, VenueWithDistances venueWithDistances) {
+		this.venueWithDistances = venueWithDistances;
 	}
 }

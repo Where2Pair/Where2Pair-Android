@@ -1,5 +1,8 @@
 package org.where2pair;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class Distance {
 
 	public final double value;
@@ -10,6 +13,12 @@ public class Distance {
 		this.unit = unit;
 	}
 
+	public String toHumanReadableString() {
+		BigDecimal decimal = new BigDecimal(value);
+		BigDecimal roundedDecimal = decimal.setScale(2, RoundingMode.HALF_UP);
+		return roundedDecimal.doubleValue() + unit.getDisplayValue();
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

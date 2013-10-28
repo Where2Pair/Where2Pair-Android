@@ -7,5 +7,7 @@ public interface UserLocationsObserver {
 	void notifyUserLocationAdded(Coordinates location);
 
 	void notifyUserLocationAddedAndZoomCamera(Coordinates location);
+
+	void notifyUserLocationRemoved(Coordinates coordinates);
 	
 }

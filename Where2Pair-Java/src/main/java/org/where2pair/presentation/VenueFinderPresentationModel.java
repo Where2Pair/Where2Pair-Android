@@ -3,8 +3,6 @@ package org.where2pair.presentation;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
 import static org.where2pair.SearchRequestBuilder.aSearchRequest;
-import static org.where2pair.presentation.MapZoomType.CLOSE;
-import static org.where2pair.presentation.MapZoomType.WIDE;
 
 import java.util.List;
 
@@ -40,6 +38,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 	private boolean listButtonVisible;
 	private boolean loadingIconVisible;
 	private boolean resetButtonVisible;
+	private boolean searchingForVenues;
 	private boolean viewingVenueSearchResults;
 
 	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, 
@@ -61,8 +60,10 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		setResetButtonVisible(false);
 		viewingVenueSearchResults = false;
 		
-		if (currentLocation == null) locationProvider.requestCurrentLocation(this);
-		else userLocations.add(currentLocation);
+		if (currentLocation == null) 
+			locationProvider.requestCurrentLocation(this);
+		else 
+			userLocations.add(currentLocation);
 	}
 	
 	@ItemPresentationModel(VenueItemPresentationModel.class)
@@ -86,6 +87,13 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		deviceVibrator.vibrate(100);
 	}
 	
+	public void userLocationPressed(Coordinates coordinates) {
+		if (searchingForVenues || viewingVenueSearchResults) return;
+			
+		userLocations.remove(coordinates);
+		userLocationsObserver.notifyUserLocationRemoved(coordinates);
+	}
+	
 	public void searchButtonPressed() {
 		if (userLocations.isEmpty()) return;
 		
@@ -93,6 +101,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		setSearchOptionsButtonVisible(false);
 		setLoadingIconVisible(true);
 		
+		searchingForVenues = true;
 		requestVenuesFromServer(userLocations.get(0));
 	}
 
@@ -104,24 +113,28 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 	
 	@Override
 	public void notifyVenuesFound(List<VenueWithDistances> venues) {
+		searchingForVenuesFinished();
 		viewingVenueSearchResults = true;
 		setVenues(venues);
+		venuesObserver.notifyVenuesUpdated();
+	}
+
+	private void searchingForVenuesFinished() {
+		searchingForVenues = false;
 		setSearchButtonVisible(false);
 		setSearchOptionsButtonVisible(false);
 		setLoadingIconVisible(false);
 		setListButtonVisible(true);
 		setResetButtonVisible(true);
-		venuesObserver.notifyVenuesUpdated();
-	}
-
-	@Override
-	public void notifyVenuesFindingFailed(String reason) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override
-	public void notifyCurrentLocation(Coordinates coordinates) {
+	public void notifyVenuesFindingFailed(String reason) {
+		searchingForVenuesFinished();
+	}
+	
+	@Override
+	public void notifyCurrentLocationEstablished(Coordinates coordinates) {
 		currentLocation = coordinates;
 		if (!userLocations.isEmpty()) return;
 		
@@ -129,18 +142,16 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		userLocationsObserver.notifyUserLocationAddedAndZoomCamera(coordinates);
 	}
 	
-	public MapViewportState getMapViewPortState() {
+	public List<Coordinates> getMapViewportBounds() {
 		List<Coordinates> coordinatesBounds = newArrayList(userLocations);
 		if (coordinatesBounds.isEmpty()) coordinatesBounds.add(LONDON);
-		MapZoomType mapZoomType = WIDE;
 		if (!venues.isEmpty()) {
 			List<VenueWithDistances> closestVenues = partition(venues, 5).get(0);
 			for (VenueWithDistances venueWithDistances : closestVenues) {
 				coordinatesBounds.add(venueWithDistances.venue.getLocation());
 			}
-			mapZoomType = CLOSE;
 		}
-		return new MapViewportState(mapZoomType, coordinatesBounds);
+		return coordinatesBounds;
 	}
 	
 	public void mapButtonPressed() {

@@ -18,25 +18,25 @@ import spock.lang.Unroll
 
 class VenueFinderPresentationModelSpec extends Specification {
 
-	def "when notified of current location, adds current location to user locations and notifies observers"() {
+	def "when current location is established, adds current location to user locations and notifies observers"() {
 		given:
 		initializePresentationModel()
 		
 		when:
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		then:
 		venueFinderPresentationModel.getUserLocations() == [CURRENT_LOCATION]
 		1 * userLocationsObserver.notifyUserLocationAddedAndZoomCamera(CURRENT_LOCATION)
 	}
 	
-	def "given user locations have already been manually added, ignore current location notification"() {
+	def "when current location is established but user locations have already been manually added, ignores"() {
 		given:
 		initializePresentationModel()
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		
 		when:
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		then:
 		venueFinderPresentationModel.getUserLocations() == [NEW_LOCATION]
@@ -48,38 +48,35 @@ class VenueFinderPresentationModelSpec extends Specification {
 		initializePresentationModel()
 		
 		when:
-		MapViewportState mapViewPortState = venueFinderPresentationModel.getMapViewPortState()
+		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
 		
 		then:
-		mapViewPortState.zoom == MapZoomType.WIDE
-		mapViewPortState.coordinateBounds == [VenueFinderPresentationModel.LONDON]
+		mapViewportBounds == [VenueFinderPresentationModel.LONDON]
 	}
 	
 	def "when there are user locations but no venues to display, then map should focus on user locations with wide zoom"() {
 		given:
 		initializePresentationModel()
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
-		MapViewportState mapViewPortState = venueFinderPresentationModel.getMapViewPortState()
+		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
 		
 		then:
-		mapViewPortState.zoom == MapZoomType.WIDE
-		mapViewPortState.coordinateBounds == [CURRENT_LOCATION]
+		mapViewportBounds == [CURRENT_LOCATION]
 	}
 	
 	def "when there are user locations and venues to display, then map should focus on user locations and nearest 5 venues with close zoom"() {
 		given:
 		initializePresentationModel()
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		venueFinderPresentationModel.venues = sampleVenuesWithDistances()
 		
 		when:
-		MapViewportState mapViewPortState = venueFinderPresentationModel.getMapViewPortState()
+		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
 		
 		then:
-		mapViewPortState.zoom == MapZoomType.CLOSE
-		mapViewPortState.coordinateBounds == [CURRENT_LOCATION] + sampleVenuesWithDistances()[0..4].collect{ it.venue.location }
+		mapViewportBounds == [CURRENT_LOCATION] + sampleVenuesWithDistances()[0..4].collect{ it.venue.location }
 	}
 	
 	@Unroll
@@ -104,7 +101,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	def "whilst searching for venues, view: #view should be visible: #visibilityExpectation"() {
 		given:
 		initializePresentationModel()
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
@@ -126,10 +123,18 @@ class VenueFinderPresentationModelSpec extends Specification {
 	def "when searching for venues completes, view: #view should be visible: #visibilityExpectation"() {
 		given:
 		initializePresentationModel()
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound([])
+		
+		then:
+		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
+		
+		when:
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.notifyVenuesFindingFailed("Network error")
 		
 		then:
 		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
@@ -214,10 +219,10 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'loadingIcon'			| false
 	}
 	
-	def "current location should be visible as user location at first"() {
+	def "current location is visible as user location"() {
 		given:
 		initializePresentationModel()
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 				
 		when:
 		def userLocations = venueFinderPresentationModel.userLocations
@@ -226,7 +231,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		userLocations == [CURRENT_LOCATION]
 	}
 	
-	def "when current location is unavailable then user locations should be empty at first"() {
+	def "when current location is unavailable then user locations are empty"() {
 		given:
 		initializePresentationModel()
 		
@@ -248,6 +253,48 @@ class VenueFinderPresentationModelSpec extends Specification {
 		1 * userLocationsObserver.notifyUserLocationAdded(NEW_LOCATION)
 		venueFinderPresentationModel.getUserLocations() == [NEW_LOCATION]
 		1 * deviceVibrator.vibrate(100)
+	}
+	
+	def "when a user location is pressed before searching for venues, location is removed"() {
+		given:
+		initializePresentationModel()
+		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
+		
+		when:
+		venueFinderPresentationModel.userLocationPressed(NEW_LOCATION)
+		
+		then:
+		1 * userLocationsObserver.notifyUserLocationRemoved(NEW_LOCATION)
+		venueFinderPresentationModel.userLocations == []
+	}
+	
+	def "when a user location is pressed whilst searching for venues, does nothing"() {
+		given:
+		initializePresentationModel()
+		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
+		
+		when:
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.userLocationPressed(NEW_LOCATION)
+		
+		then:
+		0 * userLocationsObserver.notifyUserLocationRemoved(NEW_LOCATION)
+		venueFinderPresentationModel.userLocations == [NEW_LOCATION]
+	}
+	
+	def "when a user location is pressed whilst viewing venue search results, does nothing"() {
+		given:
+		initializePresentationModel()
+		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
+		
+		when:
+		venueFinderPresentationModel.searchButtonPressed()
+		venueFinderPresentationModel.notifyVenuesFound([])
+		venueFinderPresentationModel.userLocationPressed(NEW_LOCATION)
+		
+		then:
+		0 * userLocationsObserver.notifyUserLocationRemoved(NEW_LOCATION)
+		venueFinderPresentationModel.userLocations == [NEW_LOCATION]
 	}
 	
 	def "when viewing venue search results then long-presses on map do nothing"() {
@@ -283,7 +330,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		timeProvider.getCurrentTime() >> CURRENT_TIME
 		def expectedSearchRequest = aSearchRequest().openFrom(CURRENT_TIME).near(CURRENT_LOCATION).withWifi().withSeating().build()
 		initializePresentationModel()
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
@@ -292,7 +339,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		1 * venueFinder.findVenues({ equalTo(expectedSearchRequest).matches(it) }, _)
 	}
 	
-	def "given no user locations, when search button is pressed do nothing"() {
+	def "when search button is pressed but no user locations have been specified, does nothing"() {
 		given:
 		timeProvider.getCurrentTime() >> CURRENT_TIME
 		initializePresentationModel()
@@ -307,7 +354,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		!venueFinderPresentationModel.loadingIconVisible
 	}
 	
-	def "when map button is pressed, delegate to transition handler"() {
+	def "when map button is pressed, delegates to transition handler"() {
 		given:
 		initializePresentationModel()
 		
@@ -318,7 +365,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		1 * venuesViewTransitioner.showMap()
 	}
 	
-	def "when list button is pressed, delegate to transition handler"() {
+	def "when list button is pressed, delegates to transition handler"() {
 		given:
 		initializePresentationModel()
 		
@@ -332,7 +379,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	def "when pressing reset button all user supplied locations and venues are cleared"() {
 		given:
 		initializePresentationModel()
-		venueFinderPresentationModel.notifyCurrentLocation(CURRENT_LOCATION)
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)

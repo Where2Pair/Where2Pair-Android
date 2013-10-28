@@ -4,6 +4,6 @@ import org.where2pair.Coordinates;
 
 public interface CurrentLocationObserver {
 
-	void notifyCurrentLocation(Coordinates coordinates);
+	void notifyCurrentLocationEstablished(Coordinates coordinates);
 	
 }
