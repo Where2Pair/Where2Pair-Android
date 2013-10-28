@@ -53,8 +53,11 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
 
     @Override
     public void resetDisplay() {
-        if (!mapShowing) showMap();
-
-        ((VenuesMapFragment)getFragmentManager().findFragmentByTag(MAP)).resetDisplay();
+        if (!mapShowing)
+            showMap();
+        else {
+            VenuesMapFragment venuesMapFragment = (VenuesMapFragment)getFragmentManager().findFragmentByTag(MAP);
+            venuesMapFragment.resetDisplay();
+        }
     }
 }

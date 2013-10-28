@@ -14,6 +14,7 @@
         android:layout_alignParentTop="true">
 
         <ImageView
+            android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_launcher" />
@@ -22,7 +23,10 @@
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" >
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/icon"
+            android:layout_alignBottom="@id/icon"
+            android:paddingRight="@dimen/activity_horizontal_margin">
 
             <Button
                 android:text="Search"
@@ -63,11 +67,13 @@
                 bind:visibility="{resetButtonVisible}"
                 bind:onClick="resetButtonPressed" />
 
-            <ImageView
+
+            <ProgressBar
+                style="@style/GenericProgressIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher"
-                bind:visibility="{loadingIconVisible}" />
+                android:layout_gravity="center"
+                bind:visibility="{loadingIconVisible}"/>
 
         </LinearLayout>
     </RelativeLayout>
