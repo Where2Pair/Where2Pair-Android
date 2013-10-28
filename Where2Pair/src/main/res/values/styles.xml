@@ -19,10 +19,7 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="GenericProgressBackground" parent="android:Theme">
-        <item name="android:background">#66D918</item>
-    </style>
-    <style name="GenericProgressIndicator" parent="@android:style/Widget.ProgressBar.Small">
+    <style name="GenericProgressIndicator" parent="@android:style/Widget.ProgressBar.Inverse">
         <item name="android:indeterminate">true</item>
     </style>
 </resources>

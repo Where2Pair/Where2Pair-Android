@@ -9,7 +9,7 @@
         android:id="@+id/action_bar_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/green"
+        android:background="@drawable/action_bar_background"
         style="?android:attr/buttonBarStyle"
         android:layout_alignParentTop="true">
 
@@ -17,7 +17,7 @@
             android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/pear_icon" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -65,7 +65,6 @@
                 style="?android:attr/buttonBarButtonStyle"
                 bind:visibility="{resetButtonVisible}"
                 bind:onClick="resetButtonPressed" />
-
 
             <ProgressBar
                 style="@style/GenericProgressIndicator"
