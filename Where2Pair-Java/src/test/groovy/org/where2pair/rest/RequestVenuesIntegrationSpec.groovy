@@ -40,7 +40,7 @@ class RequestVenuesIntegrationSpec extends Specification {
 		RetrofitVenueService retrofitVenueService = retrofitVenueServiceForTest()
 		
 		when:
-		retrofitVenueService.requestVenues("1.0,0.1", "12.30", "WIFI,SEATING", venuesCallback)
+		retrofitVenueService.requestVenues(["1.0,0.1"], "12.30", "WIFI,SEATING", venuesCallback)
 		
 		then:
 		venuesCallback.positiveResponseReceived

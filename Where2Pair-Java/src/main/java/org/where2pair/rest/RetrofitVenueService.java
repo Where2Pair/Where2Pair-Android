@@ -12,7 +12,7 @@ public interface RetrofitVenueService {
 	
     @GET("/venues/nearest")
     void requestVenues(
-    		@Query("location") String locations,
+    		@Query("location") List<String> locations,
     		@Query("openFrom") String openFrom, 
     		@Query("withFacilities") String withFacilities, 
     		Callback<List<VenueWithDistances>> venuesCallback);

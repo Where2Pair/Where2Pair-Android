@@ -12,7 +12,10 @@ ext.aspectjVersion = '1.7.3'
 
 dependencies {
 	compile 'com.google.guava:guava:15.0'
-	compile 'com.squareup.retrofit:retrofit:1.2.2'
+    //Using the SNAPSHOT version until retrofit adds support for iterables
+	//compile 'com.squareup.retrofit:retrofit:1.2.2'
+    compile files('libs/retrofit-1.2.3-SNAPSHOT.jar')
+    compile 'com.google.code.gson:gson:2.2.4'
     compile 'org.robobinding:robobinding:0.8.1'
     compile "org.aspectj:aspectjrt:${aspectjVersion}"
     ajc "org.aspectj:aspectjtools:${aspectjVersion}"

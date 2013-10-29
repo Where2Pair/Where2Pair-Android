@@ -1,6 +1,9 @@
 package org.where2pair.rest;
 
 import static com.google.common.base.Joiner.on;
+import static com.google.common.collect.Lists.newArrayList;
+
+import java.util.List;
 
 import org.where2pair.Coordinates;
 import org.where2pair.SearchRequest;
@@ -26,9 +29,11 @@ public class RetrofitVenueFinder implements VenueFinder {
     			new VenuesCallback(venuesResultAction));
     }
     
-	private String userLocationParam(SearchRequest searchRequest) {
-		Coordinates location = searchRequest.getLocation();
-		return location.latitude + "," + location.longitude;
+	private List<String> userLocationParam(SearchRequest searchRequest) {
+		List<String> locations = newArrayList();
+		for (Coordinates location : searchRequest.getLocations())
+			locations.add(location.latitude + "," + location.longitude);
+		return locations;
 	}
 	
 	private String openFromParam(SearchRequest searchRequest) {
