@@ -37,8 +37,7 @@ public class RetrofitVenueFinderTest {
 	@Test
     public void mapsTheSearchRequestToQueryParams() {
         SearchRequest searchRequest = aSearchRequest().openFrom(CURRENT_TIME)
-        		.near(CURRENT_LOCATION)
-        		.near(ANOTHER_LOCATION)
+        		.near(newArrayList(CURRENT_LOCATION, ANOTHER_LOCATION))
         		.withWifi()
         		.withSeating().build();
         List<String> expectedCoordinates = newArrayList("51.520547,-0.082103", "52.520547,-0.092103");

@@ -35,8 +35,8 @@ public class SearchRequestBuilder {
 		return new SearchRequest(locations, openFrom, facilities);
 	}
 
-	public SearchRequestBuilder near(Coordinates location) {
-		locations.add(location);
+	public SearchRequestBuilder near(List<Coordinates> locations) {
+		this.locations.addAll(locations);
 		return this;
 	}
 

@@ -98,7 +98,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	}
 	
 	@Unroll
-	def "whilst searching for venues, view: #view should be visible: #visibilityExpectation"() {
+	def "when searching for venues, view: #view should be visible: #visibilityExpectation"() {
 		given:
 		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
@@ -325,12 +325,16 @@ class VenueFinderPresentationModelSpec extends Specification {
 		venueFinderPresentationModel.venues == venues
 	}
 	
-	def "when search button is pressed finds open venues near current location with wifi and seating"() {
+	def "when search button is pressed finds open venues near selected locations with wifi and seating"() {
 		given:
 		timeProvider.getCurrentTime() >> CURRENT_TIME
-		def expectedSearchRequest = aSearchRequest().openFrom(CURRENT_TIME).near(CURRENT_LOCATION).withWifi().withSeating().build()
 		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
+		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
+		def expectedSearchRequest = aSearchRequest()
+			.openFrom(CURRENT_TIME)
+			.near([CURRENT_LOCATION, NEW_LOCATION])
+			.withWifi().withSeating().build()
 		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
@@ -393,7 +397,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		!venueFinderPresentationModel.viewingVenueSearchResults
 		1 * venuesViewTransitioner.resetDisplay()
 	}
-	
+
 	def initializePresentationModel() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
 				venueFinder, locationProvider, timeProvider, deviceVibrator)

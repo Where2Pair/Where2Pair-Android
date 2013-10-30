@@ -46,14 +46,11 @@ public class VenuesMapFragment extends MapFragment implements UserLocationsObser
 
         venueFinderPresentationModel.setVenuesObserver(this);
         venueFinderPresentationModel.setUserLocationsObserver(this);
-        Log.d("*****OnCreate*******", "Creating!!!!!!!!!!!!!!!!");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        Log.d("*****OnResume*******", "Resuming!!!!!!!!!!!!!!!!");
 
         googleMap = getMap();
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {

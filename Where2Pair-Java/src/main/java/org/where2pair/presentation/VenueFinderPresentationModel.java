@@ -9,7 +9,7 @@ import java.util.List;
 import org.robobinding.presentationmodel.ItemPresentationModel;
 import org.robobinding.presentationmodel.PresentationModel;
 import org.where2pair.Coordinates;
-import org.where2pair.SearchRequest;
+import org.where2pair.SearchRequestBuilder;
 import org.where2pair.SimpleTime;
 import org.where2pair.VenueFinder;
 import org.where2pair.VenueWithDistances;
@@ -102,13 +102,13 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		setLoadingIconVisible(true);
 		
 		searchingForVenues = true;
-		requestVenuesFromServer(userLocations.get(0));
+		requestVenuesFromServer(userLocations);
 	}
 
-	private void requestVenuesFromServer(Coordinates currentLocation) {
+	private void requestVenuesFromServer(List<Coordinates> locations) {
 		SimpleTime currentTime = timeProvider.getCurrentTime();
-		SearchRequest searchRequest = aSearchRequest().openFrom(currentTime).near(currentLocation).withWifi().withSeating().build();
-		venueFinder.findVenues(searchRequest, new VenuesResultAction(this));
+		SearchRequestBuilder searchRequest = aSearchRequest().openFrom(currentTime).near(locations).withWifi().withSeating();
+		venueFinder.findVenues(searchRequest.build(), new VenuesResultAction(this));
 	}
 	
 	@Override

@@ -7,6 +7,7 @@ import org.where2pair.VenueWithDistances;
 import org.where2pair.WeeklyOpeningTimes;
 
 import retrofit.RestAdapter;
+import retrofit.RestAdapter.LogLevel;
 import retrofit.converter.GsonConverter;
 
 import com.google.gson.GsonBuilder;
@@ -34,7 +35,8 @@ public class RetrofitVenueServiceAdapterFactory {
 		
 		return new RestAdapter.Builder()
 			.setConverter(new GsonConverter(gsonBuilder.create()))
-			.setServer(serverUrl);
+			.setServer(serverUrl)
+			.setLogLevel(LogLevel.FULL);
 	}
 	
 }
