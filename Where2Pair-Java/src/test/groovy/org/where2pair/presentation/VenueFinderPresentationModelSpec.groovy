@@ -19,9 +19,6 @@ import spock.lang.Unroll
 class VenueFinderPresentationModelSpec extends Specification {
 
 	def "when current location is established, adds current location to user locations and notifies observers"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
@@ -32,7 +29,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when current location is established but user locations have already been manually added, ignores"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		
 		when:
@@ -44,9 +40,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	}
 	
 	def "when there are no user locations or venues to display, then map should focus on London with wide zoom"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
 		
@@ -56,7 +49,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when there are user locations but no venues to display, then map should focus on user locations with wide zoom"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
@@ -68,7 +60,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when there are user locations and venues to display, then map should focus on user locations and nearest 5 venues with close zoom"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		venueFinderPresentationModel.venues = sampleVenuesWithDistances()
 		
@@ -82,10 +73,10 @@ class VenueFinderPresentationModelSpec extends Specification {
 	@Unroll
 	def "at first, view: #view should be visible: #visibilityExpectation"() {
 		when:
-		initializePresentationModel()
-
+		def visible = venueFinderPresentationModel."${view}Visible"
+		
 		then:
-		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
+		visible == visibilityExpectation
 		
 		where:
 		view 					| visibilityExpectation
@@ -100,7 +91,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	@Unroll
 	def "when searching for venues, view: #view should be visible: #visibilityExpectation"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
@@ -122,7 +112,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	@Unroll
 	def "when searching for venues completes, view: #view should be visible: #visibilityExpectation"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
@@ -151,9 +140,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	@Unroll
 	def "when map button pressed, view: #view should be visible: #visibilityExpectation"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound([])
@@ -175,9 +161,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 
 	@Unroll
 	def "when list button pressed, view: #view should be visible: #visibilityExpectation"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound([])
@@ -198,9 +181,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	@Unroll
 	def "when reset button pressed, view: #view should be visible: #visibilityExpectation"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound([])
@@ -221,7 +201,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "current location is visible as user location"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 				
 		when:
@@ -232,9 +211,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	}
 	
 	def "when current location is unavailable then user locations are empty"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		def userLocations = venueFinderPresentationModel.userLocations
 		
@@ -243,9 +219,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	}
 	
 	def "when the map is long-pressed a new location is added and the device vibrates"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		
@@ -257,7 +230,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when a user location is pressed before searching for venues, location is removed"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		
 		when:
@@ -270,7 +242,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when a user location is pressed whilst searching for venues, does nothing"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		
 		when:
@@ -284,7 +255,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when a user location is pressed whilst viewing venue search results, does nothing"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		
 		when:
@@ -298,9 +268,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	}
 	
 	def "when viewing venue search results then long-presses on map do nothing"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound([])
@@ -315,7 +282,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	def "when venues are updated sets venues and notifies venues observer"() {
 		given:
 		def venues = sampleVenuesWithDistances()
-		initializePresentationModel()
 		
 		when:
 		venueFinderPresentationModel.notifyVenuesFound(venues)
@@ -328,7 +294,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	def "when search button is pressed finds open venues near selected locations with wifi and seating"() {
 		given:
 		timeProvider.getCurrentTime() >> CURRENT_TIME
-		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		def expectedSearchRequest = aSearchRequest()
@@ -346,7 +311,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	def "when search button is pressed but no user locations have been specified, does nothing"() {
 		given:
 		timeProvider.getCurrentTime() >> CURRENT_TIME
-		initializePresentationModel()
 		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
@@ -359,9 +323,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	}
 	
 	def "when map button is pressed, delegates to transition handler"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.mapButtonPressed()
 		
@@ -370,9 +331,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	}
 	
 	def "when list button is pressed, delegates to transition handler"() {
-		given:
-		initializePresentationModel()
-		
 		when:
 		venueFinderPresentationModel.listButtonPressed()
 		
@@ -382,7 +340,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def "when pressing reset button all user supplied locations and venues are cleared"() {
 		given:
-		initializePresentationModel()
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
 		when:
@@ -398,7 +355,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		1 * venuesViewTransitioner.resetDisplay()
 	}
 
-	def initializePresentationModel() {
+	def setup() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
 				venueFinder, locationProvider, timeProvider, deviceVibrator)
 		venueFinderPresentationModel.userLocationsObserver = userLocationsObserver
