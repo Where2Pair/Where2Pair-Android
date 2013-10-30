@@ -36,6 +36,13 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
     }
 
     @Override
+    public void onBackPressed() {
+        if (!venueFinderPresentationModel.backButtonPressed()) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void showMap() {
         getFragmentManager().beginTransaction()
                 .replace(R.id.venues_container, new VenuesMapFragment(), MAP)

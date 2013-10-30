@@ -58,14 +58,6 @@
                 bind:visibility="{listButtonVisible}"
                 bind:onClick="listButtonPressed" />
 
-            <ImageButton
-                android:src="@drawable/ic_action_undo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"
-                bind:visibility="{resetButtonVisible}"
-                bind:onClick="resetButtonPressed" />
-
             <ProgressBar
                 style="@style/GenericProgressIndicator"
                 android:layout_width="wrap_content"

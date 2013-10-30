@@ -84,7 +84,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| true
 		'mapButton'				| false
 		'listButton'			| false
-		'resetButton'			| false
 		'loadingIcon'			| false
 	}
 	
@@ -105,7 +104,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| false
 		'listButton'			| false
-		'resetButton'			| false
 		'loadingIcon'			| true
 	}
 	
@@ -134,7 +132,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| false
 		'listButton'			| true
-		'resetButton'			| true
 		'loadingIcon'			| false
 	}
 	
@@ -155,7 +152,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| false
 		'listButton'			| true
-		'resetButton'			| true
 		'loadingIcon'			| false
 	}
 
@@ -175,16 +171,15 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| false
 		'mapButton'				| true
 		'listButton'			| false
-		'resetButton'			| true
 		'loadingIcon'			| false
 	}
 	
 	@Unroll
-	def "when reset button pressed, view: #view should be visible: #visibilityExpectation"() {
+	def "when back button pressed, view: #view should be visible: #visibilityExpectation"() {
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound([])
-		venueFinderPresentationModel.resetButtonPressed()
+		venueFinderPresentationModel.backButtonPressed()
 		
 		then:
 		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
@@ -195,7 +190,6 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'searchOptionsButton' 	| true
 		'mapButton'				| false
 		'listButton'			| false
-		'resetButton'			| false
 		'loadingIcon'			| false
 	}
 	
@@ -338,7 +332,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		1 * venuesViewTransitioner.showList()
 	}
 	
-	def "when pressing reset button all user supplied locations and venues are cleared"() {
+	def "when back button is pressed and venues are visible, all user supplied locations and venues are cleared"() {
 		given:
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		
@@ -346,15 +340,24 @@ class VenueFinderPresentationModelSpec extends Specification {
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound(sampleVenues())
-		venueFinderPresentationModel.resetButtonPressed()
+		def backButtonHandled = venueFinderPresentationModel.backButtonPressed()
 		
 		then:
 		venueFinderPresentationModel.venues == []
 		venueFinderPresentationModel.userLocations == [CURRENT_LOCATION]
 		!venueFinderPresentationModel.viewingVenueSearchResults
 		1 * venuesViewTransitioner.resetDisplay()
+		backButtonHandled == true
 	}
 
+	def "when back button is pressed and venues are not visible, do nothing"() {
+		when:
+		def backButtonHandled = venueFinderPresentationModel.backButtonPressed()
+		
+		then:
+		!backButtonHandled
+	}
+	
 	def setup() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
 				venueFinder, locationProvider, timeProvider, deviceVibrator)

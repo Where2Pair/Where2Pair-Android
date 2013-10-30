@@ -37,7 +37,6 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 	private boolean mapButtonVisible;
 	private boolean listButtonVisible;
 	private boolean loadingIconVisible;
-	private boolean resetButtonVisible;
 	private boolean searchingForVenues;
 	private boolean viewingVenueSearchResults;
 
@@ -57,7 +56,6 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		setSearchOptionsButtonVisible(true);
 		setMapButtonVisible(false);
 		setListButtonVisible(false);
-		setResetButtonVisible(false);
 		viewingVenueSearchResults = false;
 		
 		if (currentLocation == null) 
@@ -125,7 +123,6 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		setSearchOptionsButtonVisible(false);
 		setLoadingIconVisible(false);
 		setListButtonVisible(true);
-		setResetButtonVisible(true);
 	}
 	
 	@Override
@@ -169,9 +166,13 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		venuesViewTransitioner.showList();
 	}
 	
-	public void resetButtonPressed() {
-		setDefaults();
-		venuesViewTransitioner.resetDisplay();
+	public boolean backButtonPressed() {
+		if (viewingVenueSearchResults) {
+			setDefaults();
+			venuesViewTransitioner.resetDisplay();
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean isSearchButtonVisible() {
@@ -204,14 +205,6 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 
 	public void setListButtonVisible(boolean listButtonVisible) {
 		this.listButtonVisible = listButtonVisible;
-	}
-
-	public boolean isResetButtonVisible() {
-		return resetButtonVisible;
-	}
-
-	public void setResetButtonVisible(boolean resetButtonVisible) {
-		this.resetButtonVisible = resetButtonVisible;
 	}
 	
 	public boolean isLoadingIconVisible() {
