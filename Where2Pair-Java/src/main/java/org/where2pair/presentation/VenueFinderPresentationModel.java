@@ -112,6 +112,9 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 	@Override
 	public void notifyVenuesFound(List<VenueWithDistances> venues) {
 		searchingForVenuesFinished();
+		setSearchButtonVisible(false);
+		setSearchOptionsButtonVisible(false);
+		setListButtonVisible(true);
 		viewingVenueSearchResults = true;
 		setVenues(venues);
 		venuesObserver.notifyVenuesUpdated();
@@ -119,15 +122,14 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 
 	private void searchingForVenuesFinished() {
 		searchingForVenues = false;
-		setSearchButtonVisible(false);
-		setSearchOptionsButtonVisible(false);
 		setLoadingIconVisible(false);
-		setListButtonVisible(true);
 	}
 	
 	@Override
 	public void notifyVenuesFindingFailed(String reason) {
 		searchingForVenuesFinished();
+		setSearchButtonVisible(true);
+		setSearchOptionsButtonVisible(true);
 	}
 	
 	@Override

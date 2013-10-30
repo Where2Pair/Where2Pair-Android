@@ -18,58 +18,6 @@ import spock.lang.Unroll
 
 class VenueFinderPresentationModelSpec extends Specification {
 
-	def "when current location is established, adds current location to user locations and notifies observers"() {
-		when:
-		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
-		
-		then:
-		venueFinderPresentationModel.getUserLocations() == [CURRENT_LOCATION]
-		1 * userLocationsObserver.notifyUserLocationAddedAndZoomCamera(CURRENT_LOCATION)
-	}
-	
-	def "when current location is established but user locations have already been manually added, ignores"() {
-		given:
-		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
-		
-		when:
-		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
-		
-		then:
-		venueFinderPresentationModel.getUserLocations() == [NEW_LOCATION]
-		0 * userLocationsObserver.notifyUserLocationAdded(CURRENT_LOCATION)
-	}
-	
-	def "when there are no user locations or venues to display, then map should focus on London with wide zoom"() {
-		when:
-		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
-		
-		then:
-		mapViewportBounds == [VenueFinderPresentationModel.LONDON]
-	}
-	
-	def "when there are user locations but no venues to display, then map should focus on user locations with wide zoom"() {
-		given:
-		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
-		
-		when:
-		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
-		
-		then:
-		mapViewportBounds == [CURRENT_LOCATION]
-	}
-	
-	def "when there are user locations and venues to display, then map should focus on user locations and nearest 5 venues with close zoom"() {
-		given:
-		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
-		venueFinderPresentationModel.venues = sampleVenuesWithDistances()
-		
-		when:
-		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
-		
-		then:
-		mapViewportBounds == [CURRENT_LOCATION] + sampleVenuesWithDistances()[0..4].collect{ it.venue.location }
-	}
-	
 	@Unroll
 	def "at first, view: #view should be visible: #visibilityExpectation"() {
 		when:
@@ -119,6 +67,20 @@ class VenueFinderPresentationModelSpec extends Specification {
 		then:
 		venueFinderPresentationModel."${view}Visible" == visibilityExpectation
 		
+		where:
+		view 					| visibilityExpectation
+		'searchButton' 			| false
+		'searchOptionsButton' 	| false
+		'mapButton'				| false
+		'listButton'			| true
+		'loadingIcon'			| false
+	}
+	
+	@Unroll
+	def "when searching for venues fails, view: #view should be visible: #visibilityExpectation"() {
+		given:
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
+		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFindingFailed("Network error")
@@ -128,10 +90,10 @@ class VenueFinderPresentationModelSpec extends Specification {
 		
 		where:
 		view 					| visibilityExpectation
-		'searchButton' 			| false
-		'searchOptionsButton' 	| false
+		'searchButton' 			| true
+		'searchOptionsButton' 	| true
 		'mapButton'				| false
-		'listButton'			| true
+		'listButton'			| false
 		'loadingIcon'			| false
 	}
 	
@@ -191,6 +153,58 @@ class VenueFinderPresentationModelSpec extends Specification {
 		'mapButton'				| false
 		'listButton'			| false
 		'loadingIcon'			| false
+	}
+	
+	def "when current location is established, adds current location to user locations and notifies observers"() {
+		when:
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
+		
+		then:
+		venueFinderPresentationModel.getUserLocations() == [CURRENT_LOCATION]
+		1 * userLocationsObserver.notifyUserLocationAddedAndZoomCamera(CURRENT_LOCATION)
+	}
+	
+	def "when current location is established but user locations have already been manually added, ignores"() {
+		given:
+		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
+		
+		when:
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
+		
+		then:
+		venueFinderPresentationModel.getUserLocations() == [NEW_LOCATION]
+		0 * userLocationsObserver.notifyUserLocationAdded(CURRENT_LOCATION)
+	}
+	
+	def "when there are no user locations or venues to display, then map should focus on London with wide zoom"() {
+		when:
+		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
+		
+		then:
+		mapViewportBounds == [VenueFinderPresentationModel.LONDON]
+	}
+	
+	def "when there are user locations but no venues to display, then map should focus on user locations with wide zoom"() {
+		given:
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
+		
+		when:
+		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
+		
+		then:
+		mapViewportBounds == [CURRENT_LOCATION]
+	}
+	
+	def "when there are user locations and venues to display, then map should focus on user locations and nearest 5 venues with close zoom"() {
+		given:
+		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
+		venueFinderPresentationModel.venues = sampleVenuesWithDistances()
+		
+		when:
+		def mapViewportBounds = venueFinderPresentationModel.getMapViewportBounds()
+		
+		then:
+		mapViewportBounds == [CURRENT_LOCATION] + sampleVenuesWithDistances()[0..4].collect{ it.venue.location }
 	}
 	
 	def "current location is visible as user location"() {
@@ -340,22 +354,22 @@ class VenueFinderPresentationModelSpec extends Specification {
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
 		venueFinderPresentationModel.searchButtonPressed()
 		venueFinderPresentationModel.notifyVenuesFound(sampleVenues())
-		def backButtonHandled = venueFinderPresentationModel.backButtonPressed()
+		def backButtonPressHandled = venueFinderPresentationModel.backButtonPressed()
 		
 		then:
 		venueFinderPresentationModel.venues == []
 		venueFinderPresentationModel.userLocations == [CURRENT_LOCATION]
 		!venueFinderPresentationModel.viewingVenueSearchResults
 		1 * venuesViewTransitioner.resetDisplay()
-		backButtonHandled == true
+		backButtonPressHandled == true
 	}
 
 	def "when back button is pressed and venues are not visible, do nothing"() {
 		when:
-		def backButtonHandled = venueFinderPresentationModel.backButtonPressed()
+		def backButtonPressHandled = venueFinderPresentationModel.backButtonPressed()
 		
 		then:
-		!backButtonHandled
+		!backButtonPressHandled
 	}
 	
 	def setup() {
