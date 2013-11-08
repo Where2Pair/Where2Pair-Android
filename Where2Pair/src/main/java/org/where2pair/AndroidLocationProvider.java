@@ -4,17 +4,14 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 
 import org.where2pair.presentation.CurrentLocationObserver;
-import org.where2pair.presentation.LocationProvider;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;

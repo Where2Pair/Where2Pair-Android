@@ -9,7 +9,9 @@ import java.util.List;
 import org.robobinding.presentationmodel.ItemPresentationModel;
 import org.robobinding.presentationmodel.PresentationModel;
 import org.where2pair.Coordinates;
+import org.where2pair.LocationProvider;
 import org.where2pair.SearchRequestBuilder;
+import org.where2pair.SearchRequestService;
 import org.where2pair.SimpleTime;
 import org.where2pair.VenueFinder;
 import org.where2pair.VenueWithDistances;
@@ -23,8 +25,8 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 
 	static final Coordinates LONDON = new Coordinates(51.5085, 0.1257);
 	private VenueFinder venueFinder;
+	private SearchRequestService searchRequestService;
 	private LocationProvider locationProvider;
-	private TimeProvider timeProvider;
 	private DeviceVibrator deviceVibrator;
 	private VenuesViewTransitioner venuesViewTransitioner;
 	private UserLocationsObserver userLocationsObserver;
@@ -40,11 +42,11 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 	private boolean searchingForVenues;
 	private boolean viewingVenueSearchResults;
 
-	public VenueFinderPresentationModel(VenueFinder venueFinder, LocationProvider locationProvider, 
-			TimeProvider timeProvider, DeviceVibrator deviceVibrator) {
+	public VenueFinderPresentationModel(VenueFinder venueFinder, SearchRequestService searchRequestService, 
+			LocationProvider locationProvider, DeviceVibrator deviceVibrator) {
 		this.venueFinder = venueFinder;
+		this.searchRequestService = searchRequestService;
 		this.locationProvider = locationProvider;
-		this.timeProvider = timeProvider;
 		this.deviceVibrator = deviceVibrator;
 		setDefaults();
 	}
@@ -104,9 +106,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 	}
 
 	private void requestVenuesFromServer(List<Coordinates> locations) {
-		SimpleTime currentTime = timeProvider.getCurrentTime();
-		SearchRequestBuilder searchRequest = aSearchRequest().openFrom(currentTime).near(locations).withWifi().withSeating();
-		venueFinder.findVenues(searchRequest.build(), new VenuesResultAction(this));
+		venueFinder.findVenues(searchRequestService.buildSearchRequest(locations), new VenuesResultAction(this));
 	}
 	
 	@Override

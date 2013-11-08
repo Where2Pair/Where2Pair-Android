@@ -10,7 +10,10 @@ import static org.where2pair.TestUtils.sampleVenues
 import static spock.util.matcher.HamcrestSupport.that
 
 import org.where2pair.Coordinates
+import org.where2pair.LocationProvider;
+import org.where2pair.SearchRequestService;
 import org.where2pair.SimpleTime
+import org.where2pair.TimeProvider;
 import org.where2pair.VenueFinder
 
 import spock.lang.Specification
@@ -374,7 +377,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	
 	def setup() {
 		venueFinderPresentationModel = new VenueFinderPresentationModel(
-				venueFinder, locationProvider, timeProvider, deviceVibrator)
+				venueFinder, searchRequestService, locationProvider, deviceVibrator)
 		venueFinderPresentationModel.userLocationsObserver = userLocationsObserver
 		venueFinderPresentationModel.venuesObserver = venuesObserver
 		venueFinderPresentationModel.venuesViewTransitioner = venuesViewTransitioner
@@ -386,6 +389,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	VenueFinder venueFinder = Mock()
 	LocationProvider locationProvider = Mock()
 	TimeProvider timeProvider = Mock()
+	SearchRequestService searchRequestService = new SearchRequestService(timeProvider)
 	DeviceVibrator deviceVibrator = Mock()
 	VenuesViewTransitioner venuesViewTransitioner = Mock()
 	UserLocationsObserver userLocationsObserver = Mock()

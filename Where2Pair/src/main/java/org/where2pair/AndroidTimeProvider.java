@@ -2,8 +2,6 @@ package org.where2pair;
 
 import android.text.format.Time;
 
-import org.where2pair.presentation.TimeProvider;
-
 class AndroidTimeProvider implements TimeProvider {
 
     @Override
