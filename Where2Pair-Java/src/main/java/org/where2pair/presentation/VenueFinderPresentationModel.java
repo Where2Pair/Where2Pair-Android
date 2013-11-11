@@ -2,7 +2,6 @@ package org.where2pair.presentation;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
-import static org.where2pair.SearchRequestBuilder.aSearchRequest;
 
 import java.util.List;
 
@@ -10,9 +9,7 @@ import org.robobinding.presentationmodel.ItemPresentationModel;
 import org.robobinding.presentationmodel.PresentationModel;
 import org.where2pair.Coordinates;
 import org.where2pair.LocationProvider;
-import org.where2pair.SearchRequestBuilder;
 import org.where2pair.SearchRequestService;
-import org.where2pair.SimpleTime;
 import org.where2pair.VenueFinder;
 import org.where2pair.VenueWithDistances;
 import org.where2pair.VenuesResultAction;

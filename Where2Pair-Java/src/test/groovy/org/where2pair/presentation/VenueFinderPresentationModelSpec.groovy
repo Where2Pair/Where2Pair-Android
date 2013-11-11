@@ -11,6 +11,7 @@ import static spock.util.matcher.HamcrestSupport.that
 
 import org.where2pair.Coordinates
 import org.where2pair.LocationProvider;
+import org.where2pair.SearchRequest;
 import org.where2pair.SearchRequestService;
 import org.where2pair.SimpleTime
 import org.where2pair.TimeProvider;
@@ -302,27 +303,21 @@ class VenueFinderPresentationModelSpec extends Specification {
 		venueFinderPresentationModel.venues == venues
 	}
 	
-	def "when search button is pressed finds open venues near selected locations with wifi and seating"() {
+	def "when search button is pressed finds venues near selected locations"() {
 		given:
-		timeProvider.getCurrentTime() >> CURRENT_TIME
 		venueFinderPresentationModel.notifyCurrentLocationEstablished(CURRENT_LOCATION)
 		venueFinderPresentationModel.mapLongPressed(NEW_LOCATION)
-		def expectedSearchRequest = aSearchRequest()
-			.openFrom(CURRENT_TIME)
-			.near([CURRENT_LOCATION, NEW_LOCATION])
-			.withWifi().withSeating().build()
+		SearchRequest searchRequest = Mock()
+		searchRequestService.buildSearchRequest([CURRENT_LOCATION, NEW_LOCATION]) >> searchRequest
 		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		
 		then:
-		1 * venueFinder.findVenues({ equalTo(expectedSearchRequest).matches(it) }, _)
+		1 * venueFinder.findVenues(searchRequest, _)
 	}
 	
 	def "when search button is pressed but no user locations have been specified, does nothing"() {
-		given:
-		timeProvider.getCurrentTime() >> CURRENT_TIME
-		
 		when:
 		venueFinderPresentationModel.searchButtonPressed()
 		
@@ -388,8 +383,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	static final NEW_LOCATION = new Coordinates(2.0, 0.2)
 	VenueFinder venueFinder = Mock()
 	LocationProvider locationProvider = Mock()
-	TimeProvider timeProvider = Mock()
-	SearchRequestService searchRequestService = new SearchRequestService(timeProvider)
+	SearchRequestService searchRequestService = Mock()
 	DeviceVibrator deviceVibrator = Mock()
 	VenuesViewTransitioner venuesViewTransitioner = Mock()
 	UserLocationsObserver userLocationsObserver = Mock()
