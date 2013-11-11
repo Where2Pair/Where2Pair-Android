@@ -25,19 +25,11 @@
         android:layout_height="wrap_content"
         android:text="Facilities:"/>
 
-    <CheckBox
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Wifi"/>
-
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Seating"/>
-
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Baby changing"/>
+        android:layout_height="match_parent"
+        android:source="{facilities}"
+        android:itemLayout="@layout/label"
+        android:checkedItemPositions="${selectedFacilities}" />
 
 </LinearLayout>
