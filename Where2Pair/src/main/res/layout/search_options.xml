@@ -4,32 +4,71 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open from:"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            bind:text="{openFromLabel}"/>
+    </LinearLayout>
+
+    <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open times:"/>
+        bind:max="{timeSliderIncrementCount}"
+        bind:progress="${openFromProgress}"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open until:"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            bind:text="{openUntilLabel}"/>
+    </LinearLayout>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        bind:max="{timeSliderIncrementCount}"
+        bind:progress="${openUntilProgress}"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Day:"/>
 
-    <Spinner
+    <!--<Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         bind:source="{days}"
-        bind:itemLayout="@layout/day_item" />
+        bind:itemLayout="@layout/day_item"/>-->
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Facilities:"/>
 
-    <ListView
+    <!--<ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:source="{facilities}"
         android:itemLayout="@layout/label"
-        android:checkedItemPositions="${selectedFacilities}" />
+        android:checkedItemPositions="${selectedFacilities}"/>-->
 
 </LinearLayout>

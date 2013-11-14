@@ -1,5 +1,7 @@
 package org.where2pair.activity;
 
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -7,12 +9,13 @@ import com.google.inject.Inject;
 
 import org.robobinding.binder.Binder;
 import org.where2pair.R;
+import org.where2pair.presentation.SearchOptionsDialogDisplayer;
 import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.presentation.VenuesViewTransitioner;
 
 import roboguice.activity.RoboFragmentActivity;
 
-public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTransitioner {
+public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTransitioner, SearchOptionsDialogDisplayer {
 
     private static final String MAP = "map";
     private static final String LIST = "list";
@@ -25,6 +28,7 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
         Binder.bind(this, R.layout.venues_activity, venueFinderPresentationModel);
 
         venueFinderPresentationModel.setVenuesViewTransitioner(this);
+        venueFinderPresentationModel.setSearchOptionsDialogDisplayer(this);
 
         if (savedInstanceState == null) {
             getFragmentManager()
@@ -33,6 +37,13 @@ public class VenuesActivity extends RoboFragmentActivity implements VenuesViewTr
                     .commit();
         }
         mapShowing = true;
+    }
+
+    @Override
+    public void showSearchOptions() {
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        DialogFragment searchOptionsDialog = new SearchOptionsDialogFragment();
+        searchOptionsDialog.show(fragmentTransaction, "searchOptionsDialog");
     }
 
     @Override

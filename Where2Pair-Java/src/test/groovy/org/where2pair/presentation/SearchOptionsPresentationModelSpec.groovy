@@ -1,16 +1,19 @@
 package org.where2pair.presentation
 
+import static org.where2pair.Facility.BABY_CHANGING
+import static org.where2pair.Facility.SEATING
+import static org.where2pair.Facility.WIFI
+
 import org.where2pair.SearchOptionsRepository
+import org.where2pair.SimpleTime
+import org.where2pair.TimeProvider
 
 import spock.lang.Specification
-
-import static org.where2pair.Facility.WIFI
-import static org.where2pair.Facility.SEATING
-import static org.where2pair.Facility.BABY_CHANGING
 
 class SearchOptionsPresentationModelSpec extends Specification {
 
 	SearchOptionsRepository searchOptionsRepository = Mock()
+	TimeProvider timeProvider = Mock()
 	SearchOptionsPresentationModel searchOptionsPresentationModel = new SearchOptionsPresentationModel(
 		searchOptionsRepository)
 	
@@ -28,6 +31,21 @@ class SearchOptionsPresentationModelSpec extends Specification {
 		
 		then:
 		facilities == ["Wifi", "Seating", "Baby changing"]
+	}
+	
+	def "every increment of the time slider bars represents half an hour"() {
+		given:
+		timeProvider.getCurrentTime() >> new SimpleTime(12,0)
+		
+		when:
+		def incrementCount = searchOptionsPresentationModel.getTimeSliderIncrementCount()
+		
+		then:
+		incrementCount == 24
+	}
+	
+	def "shows 'open from' label"() {
+		
 	}
 	
 	def "loads selected facilities from search options repository"() {

@@ -328,6 +328,14 @@ class VenueFinderPresentationModelSpec extends Specification {
 		!venueFinderPresentationModel.loadingIconVisible
 	}
 	
+	def "when search options button is pressed, delegates to search options dialog displayer"() {
+		when:
+		venueFinderPresentationModel.searchOptionsButtonPressed()
+		
+		then:
+		1 * searchOptionsDialogDisplayer.showSearchOptions()
+	}
+	
 	def "when map button is pressed, delegates to transition handler"() {
 		when:
 		venueFinderPresentationModel.mapButtonPressed()
@@ -376,6 +384,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 		venueFinderPresentationModel.userLocationsObserver = userLocationsObserver
 		venueFinderPresentationModel.venuesObserver = venuesObserver
 		venueFinderPresentationModel.venuesViewTransitioner = venuesViewTransitioner
+		venueFinderPresentationModel.searchOptionsDialogDisplayer = searchOptionsDialogDisplayer
 	}
 	
 	static final CURRENT_TIME = new SimpleTime(12, 30);
@@ -385,6 +394,7 @@ class VenueFinderPresentationModelSpec extends Specification {
 	LocationProvider locationProvider = Mock()
 	SearchRequestService searchRequestService = Mock()
 	DeviceVibrator deviceVibrator = Mock()
+	SearchOptionsDialogDisplayer searchOptionsDialogDisplayer = Mock()
 	VenuesViewTransitioner venuesViewTransitioner = Mock()
 	UserLocationsObserver userLocationsObserver = Mock()
 	VenuesObserver venuesObserver = Mock()

@@ -25,6 +25,7 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 	private SearchRequestService searchRequestService;
 	private LocationProvider locationProvider;
 	private DeviceVibrator deviceVibrator;
+	private SearchOptionsDialogDisplayer searchOptionsDialogDisplayer;
 	private VenuesViewTransitioner venuesViewTransitioner;
 	private UserLocationsObserver userLocationsObserver;
 	private VenuesObserver venuesObserver;
@@ -150,6 +151,10 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 		return coordinatesBounds;
 	}
 	
+	public void searchOptionsButtonPressed() {
+		searchOptionsDialogDisplayer.showSearchOptions();
+	}
+	
 	public void mapButtonPressed() {
 		setSearchButtonVisible(false);
 		setSearchOptionsButtonVisible(false);
@@ -224,5 +229,9 @@ public class VenueFinderPresentationModel implements VenuesResultActionHandler, 
 
 	public void setVenuesObserver(VenuesObserver venuesObserver) {
 		this.venuesObserver = venuesObserver;
+	}
+	
+	public void setSearchOptionsDialogDisplayer(SearchOptionsDialogDisplayer searchOptionsDialogDisplayer) {
+		this.searchOptionsDialogDisplayer = searchOptionsDialogDisplayer;
 	}
 }

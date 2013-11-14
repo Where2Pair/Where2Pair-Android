@@ -8,6 +8,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
 import org.where2pair.presentation.DeviceVibrator;
+import org.where2pair.presentation.SearchOptionsPresentationModel;
 import org.where2pair.presentation.VenueFinderPresentationModel;
 import org.where2pair.rest.RetrofitVenueFinder;
 import org.where2pair.rest.RetrofitVenueServiceAdapterFactory;
@@ -26,6 +27,11 @@ public class Where2PairModule extends AbstractModule {
         VenueFinder venueFinder = new RetrofitVenueFinder(venueServiceAdapterFactory.createRetrofitVenueService());
 
         return new VenueFinderPresentationModel(venueFinder, searchRequestService, locationProvider, deviceVibrator);
+    }
+
+    @Provides @Singleton
+    public SearchOptionsPresentationModel getSearchOptionsPresentationModel(SearchOptionsRepository searchOptionsRepository) {
+        return new SearchOptionsPresentationModel(new SearchOptionsRepository());
     }
 
     @Provides @Singleton
