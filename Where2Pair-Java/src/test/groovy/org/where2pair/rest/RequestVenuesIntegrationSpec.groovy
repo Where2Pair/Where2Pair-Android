@@ -32,7 +32,7 @@ import spock.lang.Specification
 class RequestVenuesIntegrationSpec extends Specification {
 
 	static final SERVER_URL = "http://where2pair.org"
-	static final EXPECTED_REQUEST_URL = SERVER_URL + "/venues/nearest?location=1.0%2C0.1&openFrom=12.30&withFacilities=WIFI%2CSEATING"
+	static final EXPECTED_REQUEST_URL = SERVER_URL + "/venues/nearest?location=1.0,0.1&openFrom=12.30&withFacilities=WIFI,SEATING"
 	
 	def "sends request and parses response"() throws InterruptedException {
 		given:
@@ -57,13 +57,13 @@ class RequestVenuesIntegrationSpec extends Specification {
 	static class MockClient implements Client {
 		@Override
 		Response execute(Request request) throws IOException {
-			String url = request.getUrl()
+			String url = URLDecoder.decode(request.getUrl());
 			
 			if (url.equals(EXPECTED_REQUEST_URL)) {
 				String responseString = TestData.VENUES_JSON
 				return new Response(200, "no reason", [], new TypedByteArray("application/json", responseString.getBytes()))
 			}
-			
+
 			new Response(500, "incorrect url", [], new TypedString("incorrect url"))
 		}
 	}

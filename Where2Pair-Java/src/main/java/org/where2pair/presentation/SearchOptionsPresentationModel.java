@@ -10,6 +10,8 @@ import java.util.List;
 import org.robobinding.presentationmodel.PresentationModel;
 import org.where2pair.Facility;
 import org.where2pair.SearchOptionsRepository;
+import org.where2pair.SimpleTime;
+import org.where2pair.TimeProvider;
 
 import com.google.common.collect.ImmutableList;
 
@@ -19,10 +21,12 @@ public class SearchOptionsPresentationModel {
 	private static final List<String> DAYS = ImmutableList.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 	private static final List<Facility> FACILITIES = ImmutableList.of(WIFI, SEATING, BABY_CHANGING);
 	private SearchOptionsRepository searchOptionsRepository;
-	
-	public SearchOptionsPresentationModel(SearchOptionsRepository searchOptionsRepository) {
+    private TimeProvider timeProvider;
+
+    public SearchOptionsPresentationModel(SearchOptionsRepository searchOptionsRepository, TimeProvider timeProvider) {
 		this.searchOptionsRepository = searchOptionsRepository;
-	}
+        this.timeProvider = timeProvider;
+    }
 
 	public List<String> getDays() {
 		return DAYS;
@@ -61,7 +65,10 @@ public class SearchOptionsPresentationModel {
 	}
 	
 	public int getTimeSliderIncrementCount() {
-		return 10;
+        SimpleTime currentTime = timeProvider.getCurrentTime();
+        int hoursRemainingInDay = 24 - currentTime.hour - 1;
+        int fifteenMinuteBlocksRemainingInHour = (60 - currentTime.minute) / 15;
+		return (hoursRemainingInDay * 4) + fifteenMinuteBlocksRemainingInHour;
 	}
 	
 	public int getOpenFromProgress() {

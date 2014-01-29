@@ -15,7 +15,8 @@ class SearchOptionsPresentationModelSpec extends Specification {
 	SearchOptionsRepository searchOptionsRepository = Mock()
 	TimeProvider timeProvider = Mock()
 	SearchOptionsPresentationModel searchOptionsPresentationModel = new SearchOptionsPresentationModel(
-		searchOptionsRepository)
+		searchOptionsRepository,
+        timeProvider)
 	
 	def "shows monday-sunday"() {
 		when:
@@ -33,7 +34,7 @@ class SearchOptionsPresentationModelSpec extends Specification {
 		facilities == ["Wifi", "Seating", "Baby changing"]
 	}
 	
-	def "every increment of the time slider bars represents half an hour"() {
+	def "every increment of the time slider bar represents 15 minutes"() {
 		given:
 		timeProvider.getCurrentTime() >> new SimpleTime(12,0)
 		
@@ -41,7 +42,7 @@ class SearchOptionsPresentationModelSpec extends Specification {
 		def incrementCount = searchOptionsPresentationModel.getTimeSliderIncrementCount()
 		
 		then:
-		incrementCount == 24
+		incrementCount == 48
 	}
 	
 	def "shows 'open from' label"() {

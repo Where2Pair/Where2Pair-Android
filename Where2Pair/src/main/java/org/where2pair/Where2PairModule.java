@@ -30,8 +30,8 @@ public class Where2PairModule extends AbstractModule {
     }
 
     @Provides @Singleton
-    public SearchOptionsPresentationModel getSearchOptionsPresentationModel(SearchOptionsRepository searchOptionsRepository) {
-        return new SearchOptionsPresentationModel(new SearchOptionsRepository());
+    public SearchOptionsPresentationModel getSearchOptionsPresentationModel(SearchOptionsRepository searchOptionsRepository, TimeProvider timeProvider) {
+        return new SearchOptionsPresentationModel(searchOptionsRepository, timeProvider);
     }
 
     @Provides @Singleton
